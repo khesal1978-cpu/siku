@@ -13,12 +13,37 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import backgroundImage from '@assets/generated_images/Green_gradient_wave_background_201c0817.png';
 import type { UserProfile, ScratchCard, Achievement, Boost } from '@shared/schema';
+import { motion } from 'framer-motion';
 
 export default function Games() {
   const { toast } = useToast();
   const [showCoinAnimation, setShowCoinAnimation] = useState(false);
   const [animationAmount, setAnimationAmount] = useState(0);
   const userId = 'demo-user';
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
 
   const { data: profile } = useQuery<UserProfile>({
     queryKey: ['/api/profile', userId],
@@ -148,7 +173,7 @@ export default function Games() {
     const lastRefill = new Date(profile.lastEnergyRefill);
     const nextRefill = new Date(lastRefill.getTime() + 5 * 60 * 1000);
     const diff = nextRefill.getTime() - now.getTime();
-    
+
     if (diff <= 0) return 'Now';
     const minutes = Math.floor(diff / 60000);
     const seconds = Math.floor((diff % 60000) / 1000);
@@ -158,7 +183,12 @@ export default function Games() {
   const multiplier = profile ? 1 + (profile.streak * 0.1) : 1;
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <motion.div 
+      className="min-h-screen bg-background pb-20"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <div 
         className="relative h-48 -mb-6"
         style={{
@@ -184,15 +214,19 @@ export default function Games() {
 
       <div className="px-4 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <EnergyDisplay 
-            energy={profile?.energy ?? 100} 
-            maxEnergy={profile?.maxEnergy ?? 100}
-            nextRefillTime={getNextRefillTime()}
-          />
-          <StreakDisplay 
-            streak={profile?.streak ?? 0}
-            multiplier={multiplier}
-          />
+          <motion.div variants={itemVariants}>
+            <EnergyDisplay 
+              energy={profile?.energy ?? 100} 
+              maxEnergy={profile?.maxEnergy ?? 100}
+              nextRefillTime={getNextRefillTime()}
+            />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <StreakDisplay 
+              streak={profile?.streak ?? 0}
+              multiplier={multiplier}
+            />
+          </motion.div>
         </div>
 
         <Tabs defaultValue="spin" className="w-full">
@@ -204,35 +238,43 @@ export default function Games() {
           </TabsList>
 
           <TabsContent value="spin" className="mt-4">
-            <SpinWheel
-              onSpin={handleSpin}
-              canSpin={lastSpin?.canSpin ?? true}
-              nextSpinTime={lastSpin?.nextSpinTime}
-              energy={profile?.energy ?? 100}
-            />
+            <motion.div variants={itemVariants}>
+              <SpinWheel
+                onSpin={handleSpin}
+                canSpin={lastSpin?.canSpin ?? true}
+                nextSpinTime={lastSpin?.nextSpinTime}
+                energy={profile?.energy ?? 100}
+              />
+            </motion.div>
           </TabsContent>
 
           <TabsContent value="scratch" className="mt-4">
-            <ScratchCardList
-              cards={scratchCards}
-              onScratchCard={handleScratchCard}
-              onGetNewCard={handleGetNewCard}
-              canGetNewCard={(profile?.energy ?? 0) >= 10}
-            />
+            <motion.div variants={itemVariants}>
+              <ScratchCardList
+                cards={scratchCards}
+                onScratchCard={handleScratchCard}
+                onGetNewCard={handleGetNewCard}
+                canGetNewCard={(profile?.energy ?? 0) >= 10}
+              />
+            </motion.div>
           </TabsContent>
 
           <TabsContent value="tasks" className="mt-4">
-            <DailyTasks
-              achievements={achievements}
-              onClaimReward={handleClaimAchievement}
-            />
+            <motion.div variants={itemVariants}>
+              <DailyTasks
+                achievements={achievements}
+                onClaimReward={handleClaimAchievement}
+              />
+            </motion.div>
           </TabsContent>
 
           <TabsContent value="boosts" className="mt-4">
-            <BoostCard
-              boosts={boosts}
-              onActivateBoost={handleActivateBoost}
-            />
+            <motion.div variants={itemVariants}>
+              <BoostCard
+                boosts={boosts}
+                onActivateBoost={handleActivateBoost}
+              />
+            </motion.div>
           </TabsContent>
         </Tabs>
       </div>
@@ -242,6 +284,6 @@ export default function Games() {
         show={showCoinAnimation}
         onComplete={() => setShowCoinAnimation(false)}
       />
-    </div>
+    </motion.div>
   );
 }

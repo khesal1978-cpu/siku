@@ -1,5 +1,6 @@
 import { Home, Gamepad2, Users, Wallet, User } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
+import { motion } from 'framer-motion';
 
 const navItems = [
   { icon: Home, label: 'Mine', path: '/' },
@@ -13,7 +14,7 @@ export default function BottomNav() {
   const [location] = useLocation();
 
   return (
-    <nav 
+    <nav
       className="fixed bottom-0 left-0 right-0 bg-card/80 backdrop-blur-xl border-t border-card-border z-50"
       data-testid="nav-bottom"
     >
@@ -21,21 +22,24 @@ export default function BottomNav() {
         {navItems.map(({ icon: Icon, label, path }) => {
           const isActive = location === path;
           return (
-            <Link 
-              key={path} 
+            <Link
+              key={path}
               href={path}
               data-testid={`link-nav-${label.toLowerCase()}`}
             >
-              <button 
+              <motion.button
                 className={`flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all ${
-                  isActive 
-                    ? 'text-primary' 
+                  isActive
+                    ? 'text-primary'
                     : 'text-muted-foreground hover-elevate'
                 }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               >
                 <Icon className={`w-5 h-5 ${isActive ? '' : ''}`} />
                 <span className="text-[10px] font-medium">{label}</span>
-              </button>
+              </motion.button>
             </Link>
           );
         })}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import logoImage from '@assets/generated_images/PingCaset_crypto_logo_icon_e52ce570.png';
+import { motion, useSpring, useTransform } from 'framer-motion';
 
 interface CoinDisplayProps {
   amount: number;
@@ -10,6 +11,13 @@ interface CoinDisplayProps {
 
 export default function CoinDisplay({ amount, label = 'Balance', size = 'lg', showAnimation = false }: CoinDisplayProps) {
   const [displayAmount, setDisplayAmount] = useState(amount);
+
+  const spring = useSpring(0, { stiffness: 300, damping: 30 });
+  const animatedAmount = useTransform(spring, (current) => Math.floor(current).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
+  useEffect(() => {
+    spring.set(amount);
+  }, [amount, spring]);
 
   useEffect(() => {
     if (showAnimation) {
@@ -48,19 +56,48 @@ export default function CoinDisplay({ amount, label = 'Balance', size = 'lg', sh
     xl: 'w-16 h-16'
   };
 
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  };
+
+  const pulseVariants = {
+    animate: {
+      scale: [1, 1.05, 1],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        repeatType: "loop",
+        ease: "easeInOut",
+      },
+    },
+  };
+
   return (
-    <div className="text-center" data-testid="coin-display">
+    <motion.div 
+      className="text-center" 
+      data-testid="coin-display"
+      variants={itemVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <p className="text-sm text-muted-foreground mb-2" data-testid="text-coin-label">{label}</p>
       <div className="flex items-center justify-center gap-3">
-        <img src={logoImage} alt="Caset Coin" className={`${iconSizes[size]} animate-float`} />
-        <span 
-          className={`${sizeClasses[size]} font-bold font-['Poppins'] tabular-nums ${showAnimation ? 'animate-count-up' : ''}`}
+        <motion.img 
+          src={logoImage} 
+          alt="Caset Coin" 
+          className={`${iconSizes[size]} animate-float`} 
+          variants={pulseVariants}
+          animate="animate"
+        />
+        <motion.span 
+          className={`${sizeClasses[size]} font-bold font-['Poppins'] tabular-nums`}
           data-testid="text-coin-amount"
         >
-          {displayAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-        </span>
+          {animatedAmount}
+        </motion.span>
       </div>
       <p className="text-xs text-muted-foreground mt-1">CASET</p>
-    </div>
+    </motion.div>
   );
 }

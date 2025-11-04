@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { motion } from 'framer-motion';
 import SplashScreen from '@/components/SplashScreen';
 import OnboardingModal from '@/components/OnboardingModal';
 import BottomNav from '@/components/BottomNav';
@@ -17,7 +18,11 @@ import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <div className="animate-fade-in">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <Switch>
         <Route path="/" component={Dashboard} />
         <Route path="/games" component={Games} />
@@ -28,7 +33,7 @@ function Router() {
         <Route component={NotFound} />
       </Switch>
       <BottomNav />
-    </div>
+    </motion.div>
   );
 }
 
