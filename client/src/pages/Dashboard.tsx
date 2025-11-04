@@ -122,12 +122,13 @@ export default function Dashboard() {
         </motion.div>
 
         <motion.div variants={itemVariants}>
-          <Card className="p-6">
+          <Card className="p-6 glass-card dark:glass-card-dark">
             <h3 className="font-bold text-lg mb-3">Boost Your Earnings</h3>
             <div className="space-y-3">
               <motion.div 
-                className="flex items-center justify-between p-3 bg-muted/50 rounded-lg transition-all duration-300 hover:bg-muted/70"
-                whileHover={{ x: 5 }}
+                className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/10 backdrop-blur-sm transition-all duration-300"
+                whileHover={{ x: 5, scale: 1.02 }}
+                transition={{ duration: 0.2 }}
               >
                 <div className="flex items-center gap-3">
                   <motion.div

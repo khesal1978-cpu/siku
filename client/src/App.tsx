@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import SplashScreen from '@/components/SplashScreen';
 import OnboardingModal from '@/components/OnboardingModal';
 import BottomNav from '@/components/BottomNav';
+import AnimatedBackground from '@/components/AnimatedBackground';
 import Dashboard from '@/pages/Dashboard';
 import Games from '@/pages/Games';
 import Team from '@/pages/Team';
@@ -66,20 +67,23 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        {showSplash ? (
-          <SplashScreen onComplete={handleSplashComplete} />
-        ) : (
-          <>
-            <Router />
-            {showOnboarding && (
-              <OnboardingModal 
-                onComplete={handleOnboardingComplete}
-                onSkip={handleOnboardingSkip}
-              />
-            )}
-          </>
-        )}
-        <Toaster />
+        <AnimatedBackground />
+        <div className="relative z-10">
+          {showSplash ? (
+            <SplashScreen onComplete={handleSplashComplete} />
+          ) : (
+            <>
+              <Router />
+              {showOnboarding && (
+                <OnboardingModal 
+                  onComplete={handleOnboardingComplete}
+                  onSkip={handleOnboardingSkip}
+                />
+              )}
+            </>
+          )}
+          <Toaster />
+        </div>
       </TooltipProvider>
     </QueryClientProvider>
   );
