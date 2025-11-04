@@ -125,16 +125,26 @@ export default function Dashboard() {
           <Card className="p-6">
             <h3 className="font-bold text-lg mb-3">Boost Your Earnings</h3>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+              <motion.div 
+                className="flex items-center justify-between p-3 bg-muted/50 rounded-lg transition-all duration-300 hover:bg-muted/70"
+                whileHover={{ x: 5 }}
+              >
                 <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-primary" />
+                  <motion.div
+                    animate={{ rotate: [0, 10, -10, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                  >
+                    <Users className="w-5 h-5 text-primary" />
+                  </motion.div>
                   <div>
                     <p className="font-semibold text-sm">Invite Friends</p>
                     <p className="text-xs text-muted-foreground">+500 coins per invite</p>
                   </div>
                 </div>
-                <Button size="sm" data-testid="button-invite-friends">Invite</Button>
-              </div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button size="sm" data-testid="button-invite-friends">Invite</Button>
+                </motion.div>
+              </motion.div>
             </div>
           </Card>
         </motion.div>

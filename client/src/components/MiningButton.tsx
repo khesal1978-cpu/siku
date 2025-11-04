@@ -23,8 +23,9 @@ export default function MiningButton({ isActive, progress, onMine, disabled }: M
       <motion.div 
         animate={controls} 
         initial={{ scale: 1 }}
-        whileHover={{ scale: disabled ? 1 : 1.02 }}
-        whileTap={{ scale: disabled ? 1 : 0.98 }}
+        whileHover={{ scale: disabled ? 1 : 1.05 }}
+        whileTap={{ scale: disabled ? 1 : 0.95 }}
+        transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
         <Button
           size="icon"

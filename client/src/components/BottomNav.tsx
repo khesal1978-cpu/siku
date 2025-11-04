@@ -33,8 +33,9 @@ export default function BottomNav() {
                     ? 'text-primary'
                     : 'text-muted-foreground hover-elevate'
                 }`}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.1 }}
+                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
                 {isActive && (
                   <motion.div
@@ -44,7 +45,12 @@ export default function BottomNav() {
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
                 )}
-                <Icon className={`w-5 h-5 relative z-10 ${isActive ? 'drop-shadow-lg' : ''}`} />
+                <motion.div
+                  animate={isActive ? { y: [0, -3, 0] } : {}}
+                  transition={{ duration: 0.6, repeat: isActive ? Infinity : 0, repeatDelay: 2 }}
+                >
+                  <Icon className={`w-5 h-5 relative z-10 ${isActive ? 'drop-shadow-lg' : ''}`} />
+                </motion.div>
                 <span className="text-[10px] font-medium relative z-10">{label}</span>
               </motion.button>
             </Link>

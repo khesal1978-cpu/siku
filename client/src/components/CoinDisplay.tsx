@@ -71,10 +71,19 @@ export default function CoinDisplay({ amount, label = 'Balance', size = 'lg', sh
     >
       <p className="text-sm text-muted-foreground mb-2" data-testid="text-coin-label">{label}</p>
       <div className="flex items-center justify-center gap-3 relative">
-        <img 
+        <motion.img 
           src={logoImage} 
           alt="Caset Coin" 
-          className={`${iconSizes[size]}`} 
+          className={`${iconSizes[size]}`}
+          animate={{ 
+            rotate: [0, 5, -5, 0],
+            y: [0, -5, 0]
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
         />
         
         <motion.span 

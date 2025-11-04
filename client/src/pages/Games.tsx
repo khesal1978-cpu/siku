@@ -229,11 +229,19 @@ export default function Games() {
         </div>
 
         <Tabs defaultValue="spin" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="spin" data-testid="tab-spin">Spin</TabsTrigger>
-            <TabsTrigger value="scratch" data-testid="tab-scratch">Scratch</TabsTrigger>
-            <TabsTrigger value="tasks" data-testid="tab-tasks">Tasks</TabsTrigger>
-            <TabsTrigger value="boosts" data-testid="tab-boosts">Boosts</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 p-1">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <TabsTrigger value="spin" data-testid="tab-spin" className="w-full">Spin</TabsTrigger>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <TabsTrigger value="scratch" data-testid="tab-scratch" className="w-full">Scratch</TabsTrigger>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <TabsTrigger value="tasks" data-testid="tab-tasks" className="w-full">Tasks</TabsTrigger>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <TabsTrigger value="boosts" data-testid="tab-boosts" className="w-full">Boosts</TabsTrigger>
+            </motion.div>
           </TabsList>
 
           <TabsContent value="spin" className="mt-4">

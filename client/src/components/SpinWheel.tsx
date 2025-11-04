@@ -128,25 +128,35 @@ export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: Spi
         </motion.div>
       )}
 
-      <Button
-        onClick={handleSpin}
-        disabled={!canSpin || isSpinning || energy < 15}
-        className="w-full h-12 text-lg font-semibold"
-        data-testid="button-spin"
+      <motion.div
+        whileHover={{ scale: (!canSpin || isSpinning || energy < 15) ? 1 : 1.02 }}
+        whileTap={{ scale: (!canSpin || isSpinning || energy < 15) ? 1 : 0.98 }}
       >
-        {isSpinning ? (
-          <span className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 animate-spin" />
-            Spinning...
-          </span>
-        ) : !canSpin ? (
-          'Come Back Tomorrow'
-        ) : energy < 15 ? (
-          'Not Enough Energy (Need 15)'
-        ) : (
-          'Spin Now! (-15 Energy)'
-        )}
-      </Button>
+        <Button
+          onClick={handleSpin}
+          disabled={!canSpin || isSpinning || energy < 15}
+          className="w-full h-12 text-lg font-semibold"
+          data-testid="button-spin"
+        >
+          {isSpinning ? (
+            <span className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 animate-spin" />
+              Spinning...
+            </span>
+          ) : !canSpin ? (
+            'Come Back Tomorrow'
+          ) : energy < 15 ? (
+            'Not Enough Energy (Need 15)'
+          ) : (
+            <motion.span
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              Spin Now! (-15 Energy)
+            </motion.span>
+          )}
+        </Button>
+      </motion.div>
     </Card>
   );
 }

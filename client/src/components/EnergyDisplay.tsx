@@ -28,15 +28,22 @@ export default function EnergyDisplay({ energy, maxEnergy, nextRefillTime }: Ene
         transition={{ duration: 0.3 }}
       >
         <div className="flex items-center gap-3">
-          <div
+          <motion.div
             className={`w-12 h-12 rounded-full bg-gradient-to-br ${getEnergyColor()} flex items-center justify-center`}
+            animate={!isFull ? { scale: [1, 1.1, 1] } : {}}
+            transition={{ duration: 2, repeat: Infinity }}
           >
             {isFull ? (
               <Battery className="w-6 h-6 text-white" />
             ) : (
-              <BatteryCharging className="w-6 h-6 text-white" />
+              <motion.div
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <BatteryCharging className="w-6 h-6 text-white" />
+              </motion.div>
             )}
-          </div>
+          </motion.div>
 
           <div className="flex-1">
             <div className="flex items-center justify-between mb-1">
