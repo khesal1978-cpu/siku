@@ -12,14 +12,29 @@ import {
   type Boost,
   type InsertBoost,
   type MiningSession,
-  type InsertMiningSession
+  type InsertMiningSession,
+  type Transaction,
+  type InsertTransaction,
+  type Referral,
+  type InsertReferral,
+  users as usersTable, 
+  userProfiles as userProfilesTable,
+  spinRecords as spinRecordsTable,
+  scratchCards as scratchCardsTable,
+  achievements as achievementsTable,
+  boosts as boostsTable,
+  miningSession as miningSessionTable,
+  transactions as transactionsTable,
+  referrals as referralsTable
 } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { db } from "./db";
+import { eq, and, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
   
   getUserProfile(userId: string): Promise<UserProfile | undefined>;
   createUserProfile(profile: InsertUserProfile): Promise<UserProfile>;
@@ -45,214 +60,228 @@ export interface IStorage {
   getMiningSession(userId: string): Promise<MiningSession | undefined>;
   createMiningSession(session: InsertMiningSession): Promise<MiningSession>;
   updateMiningSession(id: string, updates: Partial<MiningSession>): Promise<MiningSession | undefined>;
+  
+  getTransactions(userId: string): Promise<Transaction[]>;
+  createTransaction(transaction: InsertTransaction): Promise<Transaction>;
+  
+  getReferrals(userId: string): Promise<Referral[]>;
+  createReferral(referral: InsertReferral): Promise<Referral>;
+  getReferralByCode(code: string): Promise<Referral | undefined>;
+  getUserByReferralCode(referrerId: string): Promise<User | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private userProfiles: Map<string, UserProfile>;
-  private spinRecords: Map<string, SpinRecord>;
-  private scratchCards: Map<string, ScratchCard>;
-  private achievements: Map<string, Achievement>;
-  private boosts: Map<string, Boost>;
-  private miningSessions: Map<string, MiningSession>;
-
-  constructor() {
-    this.users = new Map();
-    this.userProfiles = new Map();
-    this.spinRecords = new Map();
-    this.scratchCards = new Map();
-    this.achievements = new Map();
-    this.boosts = new Map();
-    this.miningSessions = new Map();
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(usersTable)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
   async getUserProfile(userId: string): Promise<UserProfile | undefined> {
-    return Array.from(this.userProfiles.values()).find(p => p.userId === userId);
+    const [profile] = await db.select().from(userProfilesTable).where(eq(userProfilesTable.userId, userId));
+    return profile || undefined;
   }
 
   async createUserProfile(insertProfile: InsertUserProfile): Promise<UserProfile> {
-    const id = randomUUID();
-    const profile: UserProfile = { 
-      id,
-      userId: insertProfile.userId,
-      balance: insertProfile.balance ?? 0,
-      energy: insertProfile.energy ?? 100,
-      maxEnergy: insertProfile.maxEnergy ?? 100,
-      streak: insertProfile.streak ?? 0,
-      lastLogin: insertProfile.lastLogin ?? new Date(),
-      miningSpeed: insertProfile.miningSpeed ?? 10,
-      miningMultiplier: insertProfile.miningMultiplier ?? 1,
-      lastEnergyRefill: insertProfile.lastEnergyRefill ?? new Date(),
-      totalMined: insertProfile.totalMined ?? 0
-    };
-    this.userProfiles.set(id, profile);
+    const [profile] = await db
+      .insert(userProfilesTable)
+      .values(insertProfile)
+      .returning();
     return profile;
   }
 
   async updateUserProfile(userId: string, updates: Partial<UserProfile>): Promise<UserProfile | undefined> {
-    const profile = await this.getUserProfile(userId);
-    if (!profile) return undefined;
-    const updated = { ...profile, ...updates };
-    this.userProfiles.set(profile.id, updated);
-    return updated;
+    const [profile] = await db
+      .update(userProfilesTable)
+      .set(updates)
+      .where(eq(userProfilesTable.userId, userId))
+      .returning();
+    return profile || undefined;
   }
 
   async getSpinRecords(userId: string): Promise<SpinRecord[]> {
-    return Array.from(this.spinRecords.values()).filter(r => r.userId === userId);
+    return await db.select().from(spinRecordsTable).where(eq(spinRecordsTable.userId, userId));
   }
 
   async createSpinRecord(insertRecord: InsertSpinRecord): Promise<SpinRecord> {
-    const id = randomUUID();
-    const record: SpinRecord = {
-      ...insertRecord,
-      id,
-      spinDate: new Date()
-    };
-    this.spinRecords.set(id, record);
+    const [record] = await db
+      .insert(spinRecordsTable)
+      .values(insertRecord)
+      .returning();
     return record;
   }
 
   async getLastSpinRecord(userId: string): Promise<SpinRecord | undefined> {
-    const records = await this.getSpinRecords(userId);
-    return records.sort((a, b) => b.spinDate.getTime() - a.spinDate.getTime())[0];
+    const [record] = await db
+      .select()
+      .from(spinRecordsTable)
+      .where(eq(spinRecordsTable.userId, userId))
+      .orderBy(desc(spinRecordsTable.spinDate))
+      .limit(1);
+    return record || undefined;
   }
 
   async getScratchCards(userId: string): Promise<ScratchCard[]> {
-    return Array.from(this.scratchCards.values()).filter(c => c.userId === userId);
+    return await db.select().from(scratchCardsTable).where(eq(scratchCardsTable.userId, userId));
   }
 
   async getScratchCard(cardId: string): Promise<ScratchCard | undefined> {
-    return this.scratchCards.get(cardId);
+    const [card] = await db.select().from(scratchCardsTable).where(eq(scratchCardsTable.id, cardId));
+    return card || undefined;
   }
 
   async createScratchCard(insertCard: InsertScratchCard): Promise<ScratchCard> {
-    const id = randomUUID();
-    const card: ScratchCard = {
-      id,
-      userId: insertCard.userId,
-      reward: insertCard.reward,
-      isScratched: insertCard.isScratched ?? false,
-      scratchedAt: null,
-      cardType: insertCard.cardType
-    };
-    this.scratchCards.set(id, card);
+    const [card] = await db
+      .insert(scratchCardsTable)
+      .values(insertCard)
+      .returning();
     return card;
   }
 
   async scratchCard(cardId: string): Promise<ScratchCard | undefined> {
-    const card = this.scratchCards.get(cardId);
-    if (!card || card.isScratched) return undefined;
-    const updated: ScratchCard = {
-      ...card,
-      isScratched: true,
-      scratchedAt: new Date()
-    };
-    this.scratchCards.set(cardId, updated);
-    return updated;
+    const [card] = await db
+      .update(scratchCardsTable)
+      .set({ isScratched: true, scratchedAt: new Date() })
+      .where(eq(scratchCardsTable.id, cardId))
+      .returning();
+    return card || undefined;
   }
 
   async getAchievements(userId: string): Promise<Achievement[]> {
-    return Array.from(this.achievements.values()).filter(a => a.userId === userId);
+    return await db.select().from(achievementsTable).where(eq(achievementsTable.userId, userId));
   }
 
   async createAchievement(insertAchievement: InsertAchievement): Promise<Achievement> {
-    const id = randomUUID();
-    const achievement: Achievement = {
-      id,
-      userId: insertAchievement.userId,
-      achievementKey: insertAchievement.achievementKey,
-      title: insertAchievement.title,
-      description: insertAchievement.description,
-      reward: insertAchievement.reward,
-      isCompleted: insertAchievement.isCompleted ?? false,
-      completedAt: null,
-      progress: insertAchievement.progress ?? 0,
-      target: insertAchievement.target
-    };
-    this.achievements.set(id, achievement);
+    const [achievement] = await db
+      .insert(achievementsTable)
+      .values(insertAchievement)
+      .returning();
     return achievement;
   }
 
   async updateAchievement(id: string, updates: Partial<Achievement>): Promise<Achievement | undefined> {
-    const achievement = this.achievements.get(id);
-    if (!achievement) return undefined;
-    const updated = { ...achievement, ...updates };
-    this.achievements.set(id, updated);
-    return updated;
+    const [achievement] = await db
+      .update(achievementsTable)
+      .set(updates)
+      .where(eq(achievementsTable.id, id))
+      .returning();
+    return achievement || undefined;
   }
 
   async getBoosts(userId: string): Promise<Boost[]> {
-    return Array.from(this.boosts.values()).filter(b => b.userId === userId);
+    return await db.select().from(boostsTable).where(eq(boostsTable.userId, userId));
   }
 
   async createBoost(insertBoost: InsertBoost): Promise<Boost> {
-    const id = randomUUID();
-    const startedAt = new Date();
-    const expiresAt = new Date(startedAt.getTime() + insertBoost.duration * 1000);
-    const boost: Boost = {
-      id,
-      userId: insertBoost.userId,
-      boostType: insertBoost.boostType,
-      multiplier: insertBoost.multiplier,
-      duration: insertBoost.duration,
-      startedAt,
-      expiresAt,
-      isActive: insertBoost.isActive ?? true
-    };
-    this.boosts.set(id, boost);
+    const [boost] = await db
+      .insert(boostsTable)
+      .values(insertBoost)
+      .returning();
     return boost;
   }
 
   async deactivateBoost(id: string): Promise<void> {
-    const boost = this.boosts.get(id);
-    if (boost) {
-      this.boosts.set(id, { ...boost, isActive: false });
-    }
+    await db
+      .update(boostsTable)
+      .set({ isActive: false })
+      .where(eq(boostsTable.id, id));
   }
 
   async getMiningSession(userId: string): Promise<MiningSession | undefined> {
-    return Array.from(this.miningSessions.values()).find(s => s.userId === userId && s.isActive);
+    const [session] = await db
+      .select()
+      .from(miningSessionTable)
+      .where(and(eq(miningSessionTable.userId, userId), eq(miningSessionTable.isActive, true)))
+      .limit(1);
+    return session || undefined;
   }
 
   async createMiningSession(insertSession: InsertMiningSession): Promise<MiningSession> {
-    const id = randomUUID();
-    const startedAt = new Date();
-    const session: MiningSession = {
-      id,
-      userId: insertSession.userId,
-      startedAt,
-      endsAt: insertSession.endsAt,
-      coinsPerHour: insertSession.coinsPerHour,
-      isActive: insertSession.isActive ?? true
-    };
-    this.miningSessions.set(id, session);
+    const [session] = await db
+      .insert(miningSessionTable)
+      .values(insertSession)
+      .returning();
     return session;
   }
 
   async updateMiningSession(id: string, updates: Partial<MiningSession>): Promise<MiningSession | undefined> {
-    const session = this.miningSessions.get(id);
-    if (!session) return undefined;
-    const updated = { ...session, ...updates };
-    this.miningSessions.set(id, updated);
-    return updated;
+    const [session] = await db
+      .update(miningSessionTable)
+      .set(updates)
+      .where(eq(miningSessionTable.id, id))
+      .returning();
+    return session || undefined;
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(usersTable)
+      .set(updates)
+      .where(eq(usersTable.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async getTransactions(userId: string): Promise<Transaction[]> {
+    return await db
+      .select()
+      .from(transactionsTable)
+      .where(eq(transactionsTable.userId, userId))
+      .orderBy(desc(transactionsTable.createdAt));
+  }
+
+  async createTransaction(insertTransaction: InsertTransaction): Promise<Transaction> {
+    const [transaction] = await db
+      .insert(transactionsTable)
+      .values(insertTransaction)
+      .returning();
+    return transaction;
+  }
+
+  async getReferrals(userId: string): Promise<Referral[]> {
+    return await db
+      .select()
+      .from(referralsTable)
+      .where(eq(referralsTable.referrerId, userId));
+  }
+
+  async createReferral(insertReferral: InsertReferral): Promise<Referral> {
+    const [referral] = await db
+      .insert(referralsTable)
+      .values(insertReferral)
+      .returning();
+    return referral;
+  }
+
+  async getReferralByCode(code: string): Promise<Referral | undefined> {
+    const [referral] = await db
+      .select()
+      .from(referralsTable)
+      .where(eq(referralsTable.referralCode, code))
+      .limit(1);
+    return referral || undefined;
+  }
+
+  async getUserByReferralCode(referrerId: string): Promise<User | undefined> {
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, referrerId))
+      .limit(1);
+    return user || undefined;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

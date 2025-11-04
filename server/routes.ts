@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { wsManager } from "./websocket";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/profile/:userId', async (req, res) => {
@@ -138,12 +139,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         reward
       });
 
-      await storage.updateUserProfile(req.params.userId, {
+      const updatedProfile = await storage.updateUserProfile(req.params.userId, {
         balance: profile.balance + reward,
         energy: profile.energy - 15
       });
 
+      await storage.createTransaction({
+        userId: req.params.userId,
+        amount: reward,
+        type: 'spin_wheel',
+        description: 'Spin wheel reward'
+      });
+
       res.json({ reward });
+      wsManager.broadcast(req.params.userId, 'profile_updated', updatedProfile);
     } catch (error) {
       res.status(500).json({ error: 'Failed to spin wheel' });
     }
@@ -176,11 +185,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         cardType: 'basic'
       });
 
-      await storage.updateUserProfile(req.params.userId, {
+      const updatedProfile = await storage.updateUserProfile(req.params.userId, {
         energy: profile.energy - 10
       });
 
       res.json(card);
+      wsManager.broadcast(req.params.userId, 'profile_updated', updatedProfile);
     } catch (error) {
       res.status(500).json({ error: 'Failed to create scratch card' });
     }
@@ -206,12 +216,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Failed to scratch card' });
       }
 
-      await storage.updateUserProfile(card.userId, {
+      const updatedProfile = await storage.updateUserProfile(card.userId, {
         balance: profile.balance + scratchedCard.reward,
         energy: profile.energy - 5
       });
 
+      await storage.createTransaction({
+        userId: card.userId,
+        amount: scratchedCard.reward,
+        type: 'scratch_card',
+        description: 'Scratch card reward'
+      });
+
       res.json(scratchedCard);
+      wsManager.broadcast(card.userId, 'profile_updated', updatedProfile);
     } catch (error) {
       res.status(500).json({ error: 'Failed to scratch card' });
     }
@@ -239,9 +257,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const profile = await storage.getUserProfile(achievement.userId);
       if (profile) {
-        await storage.updateUserProfile(achievement.userId, {
+        const updatedProfile = await storage.updateUserProfile(achievement.userId, {
           balance: profile.balance + achievement.reward
         });
+        
+        await storage.createTransaction({
+          userId: achievement.userId,
+          amount: achievement.reward,
+          type: 'achievement',
+          description: `Achievement claimed: ${achievement.title}`
+        });
+
+        wsManager.broadcast(achievement.userId, 'achievement_claimed', { achievement, profile: updatedProfile });
       }
 
       res.json(achievement);
@@ -303,15 +330,171 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isActive: true
       });
 
-      await storage.updateUserProfile(req.params.userId, {
+      const updatedProfile = await storage.updateUserProfile(req.params.userId, {
         balance: profile.balance - config.cost,
         energy: profile.energy - config.energyCost,
         miningMultiplier: profile.miningMultiplier * config.multiplier
       });
 
+      await storage.createTransaction({
+        userId: req.params.userId,
+        amount: -config.cost,
+        type: 'boost_purchase',
+        description: `Activated ${boostType} boost`
+      });
+
       res.json(boost);
+      wsManager.broadcast(req.params.userId, 'boost_activated', { boost, profile: updatedProfile });
     } catch (error) {
       res.status(500).json({ error: 'Failed to activate boost' });
+    }
+  });
+
+  app.get('/api/mining/:userId', async (req, res) => {
+    try {
+      const session = await storage.getMiningSession(req.params.userId);
+      res.json(session || null);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch mining session' });
+    }
+  });
+
+  app.post('/api/mining/start/:userId', async (req, res) => {
+    try {
+      const profile = await storage.getUserProfile(req.params.userId);
+      if (!profile) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const existingSession = await storage.getMiningSession(req.params.userId);
+      if (existingSession) {
+        return res.status(400).json({ error: 'Mining session already active' });
+      }
+
+      const now = new Date();
+      const endsAt = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+      
+      const session = await storage.createMiningSession({
+        userId: req.params.userId,
+        endsAt,
+        coinsPerHour: profile.miningSpeed * profile.miningMultiplier,
+        isActive: true
+      });
+
+      res.json(session);
+      wsManager.broadcast(req.params.userId, 'mining_started', session);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to start mining' });
+    }
+  });
+
+  app.post('/api/mining/claim/:userId', async (req, res) => {
+    try {
+      const session = await storage.getMiningSession(req.params.userId);
+      if (!session) {
+        return res.status(404).json({ error: 'No active mining session' });
+      }
+
+      const now = new Date();
+      const startedAt = new Date(session.startedAt);
+      const hoursElapsed = Math.min(6, (now.getTime() - startedAt.getTime()) / (1000 * 60 * 60));
+      const coinsEarned = hoursElapsed * session.coinsPerHour;
+
+      const profile = await storage.getUserProfile(req.params.userId);
+      if (!profile) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      await storage.updateMiningSession(session.id, { isActive: false });
+      const updatedProfile = await storage.updateUserProfile(req.params.userId, {
+        balance: profile.balance + coinsEarned,
+        totalMined: profile.totalMined + coinsEarned
+      });
+
+      await storage.createTransaction({
+        userId: req.params.userId,
+        amount: coinsEarned,
+        type: 'mining',
+        description: 'Mining reward claimed'
+      });
+
+      res.json({ coinsEarned, profile: updatedProfile });
+      wsManager.broadcast(req.params.userId, 'mining_claimed', { coinsEarned, profile: updatedProfile });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to claim mining' });
+    }
+  });
+
+  app.get('/api/transactions/:userId', async (req, res) => {
+    try {
+      const transactions = await storage.getTransactions(req.params.userId);
+      res.json(transactions);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch transactions' });
+    }
+  });
+
+  app.get('/api/referrals/:userId', async (req, res) => {
+    try {
+      const referrals = await storage.getReferrals(req.params.userId);
+      res.json(referrals);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch referrals' });
+    }
+  });
+
+  app.post('/api/referrals/create/:userId', async (req, res) => {
+    try {
+      const { referralCode } = req.body;
+      const profile = await storage.getUserProfile(req.params.userId);
+      
+      if (!profile) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const referral = await storage.createReferral({
+        referrerId: req.params.userId,
+        referredId: '',
+        referralCode,
+        rewardClaimed: false
+      });
+
+      res.json(referral);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to create referral' });
+    }
+  });
+
+  app.get('/api/leaderboard', async (req, res) => {
+    try {
+      res.json([]);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch leaderboard' });
+    }
+  });
+
+  app.put('/api/user/:userId', async (req, res) => {
+    try {
+      const { username, country, avatar } = req.body;
+      const updates: any = {};
+      if (username) updates.username = username;
+      if (country) updates.country = country;
+      if (avatar) updates.avatar = avatar;
+
+      const user = await storage.updateUser(req.params.userId, updates);
+      res.json(user);
+      wsManager.broadcast(req.params.userId, 'user_updated', user);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update user' });
+    }
+  });
+
+  app.get('/api/user/:userId', async (req, res) => {
+    try {
+      const user = await storage.getUser(req.params.userId);
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch user' });
     }
   });
 

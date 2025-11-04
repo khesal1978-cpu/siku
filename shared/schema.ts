@@ -7,6 +7,9 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  country: text("country"),
+  avatar: text("avatar"),
+  joinedAt: timestamp("joined_at").notNull().default(sql`now()`),
 });
 
 export const userProfiles = pgTable("user_profiles", {
@@ -21,6 +24,24 @@ export const userProfiles = pgTable("user_profiles", {
   miningMultiplier: real("mining_multiplier").notNull().default(1),
   lastEnergyRefill: timestamp("last_energy_refill").notNull().default(sql`now()`),
   totalMined: real("total_mined").notNull().default(0),
+});
+
+export const transactions = pgTable("transactions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  amount: real("amount").notNull(),
+  type: text("type").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+});
+
+export const referrals = pgTable("referrals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  referrerId: varchar("referrer_id").notNull(),
+  referredId: varchar("referred_id").notNull(),
+  referralCode: text("referral_code").notNull(),
+  rewardClaimed: boolean("reward_claimed").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
 });
 
 export const spinRecords = pgTable("spin_records", {
@@ -106,6 +127,16 @@ export const insertMiningSessionSchema = createInsertSchema(miningSession).omit(
   startedAt: true,
 });
 
+export const insertTransactionSchema = createInsertSchema(transactions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertReferralSchema = createInsertSchema(referrals).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type UserProfile = typeof userProfiles.$inferSelect;
@@ -120,3 +151,7 @@ export type Boost = typeof boosts.$inferSelect;
 export type InsertBoost = z.infer<typeof insertBoostSchema>;
 export type MiningSession = typeof miningSession.$inferSelect;
 export type InsertMiningSession = z.infer<typeof insertMiningSessionSchema>;
+export type Transaction = typeof transactions.$inferSelect;
+export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
+export type Referral = typeof referrals.$inferSelect;
+export type InsertReferral = z.infer<typeof insertReferralSchema>;

@@ -1,6 +1,8 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { wsManager } from "./websocket";
+import { backgroundJobManager } from "./background-jobs";
 
 const app = express();
 
@@ -49,6 +51,8 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  wsManager.initialize(server);
+
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
@@ -77,5 +81,6 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    backgroundJobManager.start();
   });
 })();
