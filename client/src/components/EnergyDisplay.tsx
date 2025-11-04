@@ -51,10 +51,12 @@ export default function EnergyDisplay({ energy, maxEnergy, nextRefillTime }: Ene
               <span className="font-semibold text-sm">Energy</span>
               <motion.span
                 key={energy}
-                initial={{ scale: 1.3, color: isLow ? '#ef4444' : '#f59e0b' }}
-                animate={{ scale: 1, color: 'inherit' }}
-                transition={{ duration: 0.3 }}
-                className="text-sm font-bold"
+                initial={{ scale: 1.3 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
+                className={`text-sm font-bold transition-colors duration-300 ${
+                  isLow ? 'text-red-500' : isFull ? 'text-green-500' : 'text-yellow-500'
+                }`}
               >
                 {energy}/{maxEnergy}
               </motion.span>

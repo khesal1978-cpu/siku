@@ -75,27 +75,36 @@ export default function CoinDisplay({ amount, label = 'Balance', size = 'lg', sh
 
   return (
     <motion.div 
-      className="text-center" 
+      className="text-center relative" 
       data-testid="coin-display"
       variants={itemVariants}
       initial="hidden"
       animate="visible"
     >
       <p className="text-sm text-muted-foreground mb-2" data-testid="text-coin-label">{label}</p>
-      <div className="flex items-center justify-center gap-3">
-        <motion.img 
-          src={logoImage} 
-          alt="Caset Coin" 
-          className={`${iconSizes[size]} animate-float`} 
-          variants={pulseVariants}
-          animate="animate"
-        />
-        <motion.span 
-          className={`${sizeClasses[size]} font-bold font-['Poppins'] tabular-nums`}
-          data-testid="text-coin-amount"
-        >
-          {animatedAmount}
-        </motion.span>
+      <div className="flex items-center justify-center gap-3 relative">
+        <motion.div className="relative">
+          <motion.img 
+            src={logoImage} 
+            alt="Caset Coin" 
+            className={`${iconSizes[size]} animate-float relative z-10`} 
+            variants={pulseVariants}
+            animate="animate"
+          />
+          <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full animate-pulse" />
+        </motion.div>
+        
+        <div className="relative">
+          <motion.span 
+            className={`${sizeClasses[size]} font-bold font-['Poppins'] tabular-nums relative z-10`}
+            data-testid="text-coin-amount"
+          >
+            {animatedAmount}
+          </motion.span>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-shimmer overflow-hidden">
+            <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          </div>
+        </div>
       </div>
       <p className="text-xs text-muted-foreground mt-1">CASET</p>
     </motion.div>

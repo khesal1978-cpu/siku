@@ -28,17 +28,25 @@ export default function BottomNav() {
               data-testid={`link-nav-${label.toLowerCase()}`}
             >
               <motion.button
-                className={`flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all ${
+                className={`relative flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all ${
                   isActive
                     ? 'text-primary'
                     : 'text-muted-foreground hover-elevate'
                 }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.1, y: -2 }}
+                whileTap={{ scale: 0.9 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               >
-                <Icon className={`w-5 h-5 ${isActive ? '' : ''}`} />
-                <span className="text-[10px] font-medium">{label}</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-primary/10 rounded-lg"
+                    initial={false}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                )}
+                <Icon className={`w-5 h-5 relative z-10 ${isActive ? 'drop-shadow-lg' : ''}`} />
+                <span className="text-[10px] font-medium relative z-10">{label}</span>
               </motion.button>
             </Link>
           );

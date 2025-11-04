@@ -33,7 +33,29 @@ export default function MiningButton({ isActive, progress, onMine, disabled }: M
 
   return (
     <div className="relative flex flex-col items-center" data-testid="mining-button-container">
-      <motion.div animate={controls} initial={{ scale: 1 }}>
+      {isActive && (
+        <motion.div
+          className="absolute inset-0 rounded-full"
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.5, 0, 0.5],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <div className="w-48 h-48 md:w-56 md:h-56 rounded-full bg-primary/20 blur-xl" />
+        </motion.div>
+      )}
+      
+      <motion.div 
+        animate={controls} 
+        initial={{ scale: 1 }}
+        whileHover={{ scale: disabled ? 1 : 1.05 }}
+        whileTap={{ scale: disabled ? 1 : 0.95 }}
+      >
         <Button
           size="icon"
           onClick={onMine}

@@ -117,15 +117,34 @@ export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: Spi
 
       {wonAmount && (
         <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="text-center mb-4"
+          initial={{ scale: 0, opacity: 0, y: 20 }}
+          animate={{ 
+            scale: [0, 1.2, 1], 
+            opacity: 1,
+            y: 0
+          }}
+          transition={{
+            duration: 0.6,
+            times: [0, 0.6, 1],
+            ease: "easeOut"
+          }}
+          className="text-center mb-4 relative"
         >
-          <div className="inline-block px-6 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full shadow-lg">
+          <motion.div
+            animate={{
+              boxShadow: [
+                "0 0 20px rgba(251, 191, 36, 0.5)",
+                "0 0 40px rgba(251, 191, 36, 0.8)",
+                "0 0 20px rgba(251, 191, 36, 0.5)"
+              ]
+            }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="inline-block px-6 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full shadow-lg"
+          >
             <p className="text-white font-bold text-xl">
               🎉 You won {wonAmount} CASET! 🎉
             </p>
-          </div>
+          </motion.div>
         </motion.div>
       )}
 
