@@ -1,0 +1,97 @@
+Build a mobile-first web app called “PingCaset” (you can replace the name later) — a user-friendly crypto-style mining app inspired by Pi Network and Interlink Network, with a premium and futuristic look.
+
+The MVP version should include:
+
+🔹 1. Onboarding & Auth
+
+Splash screen with app logo and tagline
+
+Signup/Login with email, Google, or phone number
+
+Referral system (unique referral code per user)
+
+Dashboard tutorial popup on first login
+
+🔹 2. Mining Dashboard
+
+Beautiful real-time counter showing “Mining Balance”
+
+Tap to mine button (like Pi Network “Lightning” button)
+
+Show mining speed, total mined, and active mining time
+
+Daily mining reset timer
+
+Optional boost buttons (Invite more users, social share, etc.)
+
+🔹 3. Referral & Network System
+
+“My Team” page showing referred users (direct & indirect)
+
+Leaderboard (top miners globally & regionally)
+
+Referral bonus system integrated with mining speed
+
+🔹 4. Wallet (MVP)
+
+Show total mined coins
+
+Show transaction history (even if mock data)
+
+Withdraw button (inactive in MVP, grayed out)
+
+🔹 5. UI/UX & Theme
+
+Clean, premium dark UI with neon blue, purple, and gold gradients
+
+Glassmorphism + neumorphism combo for buttons and cards
+
+Rounded edges, smooth animations, and subtle particle effects
+
+Responsive for both mobile and desktop
+
+🔹 6. MVP Backend (if using database)
+
+Firebase or Supabase for authentication and user data
+
+Track mining progress in database
+
+Store referral network links
+
+Admin panel for user stats and control (optional MVP)
+
+🔹 7. Extra Features (optional but good for show)
+
+“Community” tab (links to Telegram or Discord)
+
+“Announcements” or “News” feed section
+
+“Profile” section (with editable username, country, invite code)
+
+🧠 Tech Stack Suggestion
+
+Frontend: React + TailwindCSS + Framer Motion
+
+Backend: Firebase / Supabase
+
+Auth & DB: Firebase Auth, Firestore
+
+Hosting: Vercel or Netlify
+
+✨ Design Style
+
+Feel like Pi Network + futuristic Web3 dashboard
+
+Must look furnished, premium, trustworthy, and startup-ready
+
+Include responsive card layouts and a dynamic dashboard
+
+🧩 Deliverables
+
+Fully working MVP (auth, mining counter, referral system)
+
+Responsive frontend
+
+Hosted demo link (if possible)
+
+Clean folder structure (frontend, backend, assets)
