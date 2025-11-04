@@ -189,7 +189,7 @@ export default function Games() {
       animate="visible"
     >
       <div 
-        className="relative h-48 -mb-6"
+        className="relative h-40 mb-4"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: 'cover',
@@ -198,16 +198,26 @@ export default function Games() {
       >
         <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-background/60 to-background" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
-        <div className="relative h-full flex items-end p-6 pb-10">
-          <div>
+        <div className="relative h-full flex items-end p-6 pb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
             <div className="flex items-center gap-3 mb-2">
-              <Gamepad2 className="w-8 h-8 text-primary" />
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 0.5, ease: "backOut" }}
+              >
+                <Gamepad2 className="w-8 h-8 text-primary" />
+              </motion.div>
               <h1 className="text-3xl font-bold font-['Poppins'] text-foreground drop-shadow-lg">
                 Mini Games
               </h1>
             </div>
             <p className="text-sm text-muted-foreground drop-shadow">Play games to earn bonus coins</p>
-          </div>
+          </motion.div>
         </div>
       </div>
 

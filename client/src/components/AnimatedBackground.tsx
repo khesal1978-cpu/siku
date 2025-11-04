@@ -22,19 +22,21 @@ export default function AnimatedBackground() {
       speedY: number;
       opacity: number;
       fadeDirection: number;
+      pulseSpeed: number;
     }> = [];
 
-    const particleCount = 40;
+    const particleCount = 50;
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        radius: Math.random() * 80 + 40,
-        speedX: (Math.random() - 0.5) * 0.3,
-        speedY: (Math.random() - 0.5) * 0.3,
-        opacity: Math.random() * 0.15 + 0.05,
-        fadeDirection: Math.random() > 0.5 ? 1 : -1
+        radius: Math.random() * 100 + 50,
+        speedX: (Math.random() - 0.5) * 0.4,
+        speedY: (Math.random() - 0.5) * 0.4,
+        opacity: Math.random() * 0.12 + 0.03,
+        fadeDirection: Math.random() > 0.5 ? 1 : -1,
+        pulseSpeed: Math.random() * 0.001 + 0.0003
       });
     }
 
@@ -47,9 +49,9 @@ export default function AnimatedBackground() {
         particle.x += particle.speedX;
         particle.y += particle.speedY;
 
-        particle.opacity += particle.fadeDirection * 0.0005;
-        if (particle.opacity >= 0.2) particle.fadeDirection = -1;
-        if (particle.opacity <= 0.05) particle.fadeDirection = 1;
+        particle.opacity += particle.fadeDirection * particle.pulseSpeed;
+        if (particle.opacity >= 0.15) particle.fadeDirection = -1;
+        if (particle.opacity <= 0.03) particle.fadeDirection = 1;
 
         if (particle.x < -particle.radius) particle.x = canvas.width + particle.radius;
         if (particle.x > canvas.width + particle.radius) particle.x = -particle.radius;
@@ -61,8 +63,9 @@ export default function AnimatedBackground() {
           particle.x, particle.y, particle.radius
         );
         
-        gradient.addColorStop(0, `rgba(16, 185, 129, ${particle.opacity})`);
-        gradient.addColorStop(0.5, `rgba(16, 185, 129, ${particle.opacity * 0.5})`);
+        gradient.addColorStop(0, `rgba(16, 185, 129, ${particle.opacity * 0.9})`);
+        gradient.addColorStop(0.4, `rgba(16, 185, 129, ${particle.opacity * 0.4})`);
+        gradient.addColorStop(0.7, `rgba(16, 185, 129, ${particle.opacity * 0.15})`);
         gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
 
         ctx.fillStyle = gradient;
@@ -97,25 +100,26 @@ export default function AnimatedBackground() {
       />
       
       <div className="fixed inset-0 pointer-events-none z-0">
-        {[...Array(6)].map((_, i) => (
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full"
             style={{
-              width: `${Math.random() * 300 + 200}px`,
-              height: `${Math.random() * 300 + 200}px`,
+              width: `${Math.random() * 400 + 250}px`,
+              height: `${Math.random() * 400 + 250}px`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              background: `radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0) 70%)`,
-              filter: 'blur(40px)',
+              background: `radial-gradient(circle, rgba(16, 185, 129, ${0.06 + Math.random() * 0.04}) 0%, rgba(16, 185, 129, ${0.02 + Math.random() * 0.02}) 50%, rgba(16, 185, 129, 0) 70%)`,
+              filter: 'blur(60px)',
             }}
             animate={{
-              x: [0, Math.random() * 100 - 50, 0],
-              y: [0, Math.random() * 100 - 50, 0],
-              scale: [1, 1.2, 1],
+              x: [0, Math.random() * 150 - 75, Math.random() * 100 - 50, 0],
+              y: [0, Math.random() * 150 - 75, Math.random() * 100 - 50, 0],
+              scale: [1, 1.15, 1.05, 1],
+              opacity: [0.7, 1, 0.8, 0.7],
             }}
             transition={{
-              duration: Math.random() * 10 + 15,
+              duration: Math.random() * 15 + 20,
               repeat: Infinity,
               ease: "easeInOut",
               delay: Math.random() * 5,
