@@ -15,53 +15,23 @@ export default function MiningButton({ isActive, progress, onMine, disabled }: M
   const controls = useAnimation();
 
   useEffect(() => {
-    if (isActive) {
-      controls.start({
-        scale: [1, 1.05, 1],
-        transition: {
-          duration: 1.5,
-          repeat: Infinity,
-          repeatType: "loop",
-          ease: "easeInOut",
-        },
-      });
-    } else {
-      controls.stop();
-      controls.set({ scale: 1 });
-    }
+    controls.set({ scale: 1 });
   }, [isActive, controls]);
 
   return (
     <div className="relative flex flex-col items-center" data-testid="mining-button-container">
-      {isActive && (
-        <motion.div
-          className="absolute inset-0 rounded-full"
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.5, 0, 0.5],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          <div className="w-48 h-48 md:w-56 md:h-56 rounded-full bg-primary/20 blur-xl" />
-        </motion.div>
-      )}
-      
       <motion.div 
         animate={controls} 
         initial={{ scale: 1 }}
-        whileHover={{ scale: disabled ? 1 : 1.05 }}
-        whileTap={{ scale: disabled ? 1 : 0.95 }}
+        whileHover={{ scale: disabled ? 1 : 1.02 }}
+        whileTap={{ scale: disabled ? 1 : 0.98 }}
       >
         <Button
           size="icon"
           onClick={onMine}
           disabled={disabled}
           data-testid="button-mine"
-          className={`w-48 h-48 md:w-56 md:h-56 rounded-full relative overflow-hidden shadow-2xl transition-all duration-300 bg-gradient-to-br from-muted/30 via-muted/20 to-card border-4 border-primary/30 backdrop-blur-sm ${isActive ? 'animate-mining-pulse' : ''}`}
+          className="w-48 h-48 md:w-56 md:h-56 rounded-full relative overflow-hidden shadow-xl transition-all duration-300 bg-gradient-to-br from-muted/30 via-muted/20 to-card border-4 border-primary/30"
         >
           <svg
             className="absolute inset-0 w-full h-full"
@@ -95,9 +65,7 @@ export default function MiningButton({ isActive, progress, onMine, disabled }: M
             </defs>
 
             <g clipPath="url(#circleClip)">
-              <use href="#wave1" fill="url(#liquidGradient)" filter="url(#glow)" className={isActive ? 'animate-liquid-wave-1' : ''} />
-              <use href="#wave2" fill="url(#liquidHighlight)" opacity="0.4" className={isActive ? 'animate-liquid-wave-2' : ''} />
-              <use href="#wave3" fill="rgba(255,255,255,0.1)" className={isActive ? 'animate-liquid-wave-3' : ''} />
+              <use href="#wave1" fill="url(#liquidGradient)" className={isActive ? 'animate-liquid-wave-1' : ''} />
             </g>
 
             <circle
@@ -114,7 +82,7 @@ export default function MiningButton({ isActive, progress, onMine, disabled }: M
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent rounded-full pointer-events-none" />
           <div className="absolute inset-0 flex items-center justify-center z-10">
             <Zap
-              className={`w-20 h-20 md:w-24 md:h-24 ${isActive ? 'animate-pulse text-primary-foreground drop-shadow-lg' : 'text-foreground'} transition-colors duration-300`}
+              className={`w-20 h-20 md:w-24 md:h-24 ${isActive ? 'text-primary-foreground' : 'text-foreground'} transition-colors duration-300`}
               strokeWidth={2.5}
             />
           </div>

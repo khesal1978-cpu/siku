@@ -33,9 +33,8 @@ export default function BottomNav() {
                     ? 'text-primary'
                     : 'text-muted-foreground hover-elevate'
                 }`}
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.1 }}
               >
                 {isActive && (
                   <motion.div

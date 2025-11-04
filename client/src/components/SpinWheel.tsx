@@ -77,11 +77,9 @@ export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: Spi
             style={{ rotate: rotation }}
             animate={{ 
               rotate: rotation,
-              scale: isSpinning ? [1, 1.05, 1] : 1,
             }}
             transition={{ 
               rotate: { duration: 4, ease: [0.34, 1.56, 0.64, 1] },
-              scale: { duration: 0.3, repeat: isSpinning ? Infinity : 0 }
             }}
           >
             {wheelSegments.map((segment, index) => {
@@ -117,34 +115,16 @@ export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: Spi
 
       {wonAmount && (
         <motion.div
-          initial={{ scale: 0, opacity: 0, y: 20 }}
-          animate={{ 
-            scale: [0, 1.2, 1], 
-            opacity: 1,
-            y: 0
-          }}
-          transition={{
-            duration: 0.6,
-            times: [0, 0.6, 1],
-            ease: "easeOut"
-          }}
-          className="text-center mb-4 relative"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="text-center mb-4"
         >
-          <motion.div
-            animate={{
-              boxShadow: [
-                "0 0 20px rgba(251, 191, 36, 0.5)",
-                "0 0 40px rgba(251, 191, 36, 0.8)",
-                "0 0 20px rgba(251, 191, 36, 0.5)"
-              ]
-            }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="inline-block px-6 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full shadow-lg"
-          >
+          <div className="inline-block px-6 py-3 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full shadow-lg">
             <p className="text-white font-bold text-xl">
               🎉 You won {wonAmount} CASET! 🎉
             </p>
-          </motion.div>
+          </div>
         </motion.div>
       )}
 
@@ -156,12 +136,7 @@ export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: Spi
       >
         {isSpinning ? (
           <span className="flex items-center gap-2">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            >
-              <Sparkles className="w-5 h-5" />
-            </motion.div>
+            <Sparkles className="w-5 h-5 animate-spin" />
             Spinning...
           </span>
         ) : !canSpin ? (

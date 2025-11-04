@@ -26,22 +26,20 @@ export default function Games() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
+        staggerChildren: 0.05,
+        delayChildren: 0
       }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30, scale: 0.95 },
+    hidden: { opacity: 0, y: 10 },
     visible: { 
       opacity: 1, 
       y: 0,
-      scale: 1,
       transition: {
-        type: "spring",
-        stiffness: 120,
-        damping: 15
+        duration: 0.3,
+        ease: "easeOut"
       }
     }
   };

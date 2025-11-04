@@ -57,20 +57,8 @@ export default function CoinDisplay({ amount, label = 'Balance', size = 'lg', sh
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-  };
-
-  const pulseVariants = {
-    animate: {
-      scale: [1, 1.05, 1],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        repeatType: "loop",
-        ease: "easeInOut",
-      },
-    },
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.3 } },
   };
 
   return (
@@ -83,28 +71,18 @@ export default function CoinDisplay({ amount, label = 'Balance', size = 'lg', sh
     >
       <p className="text-sm text-muted-foreground mb-2" data-testid="text-coin-label">{label}</p>
       <div className="flex items-center justify-center gap-3 relative">
-        <motion.div className="relative">
-          <motion.img 
-            src={logoImage} 
-            alt="Caset Coin" 
-            className={`${iconSizes[size]} animate-float relative z-10`} 
-            variants={pulseVariants}
-            animate="animate"
-          />
-          <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full animate-pulse" />
-        </motion.div>
+        <img 
+          src={logoImage} 
+          alt="Caset Coin" 
+          className={`${iconSizes[size]}`} 
+        />
         
-        <div className="relative">
-          <motion.span 
-            className={`${sizeClasses[size]} font-bold font-['Poppins'] tabular-nums relative z-10`}
-            data-testid="text-coin-amount"
-          >
-            {animatedAmount}
-          </motion.span>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-shimmer overflow-hidden">
-            <div className="w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          </div>
-        </div>
+        <motion.span 
+          className={`${sizeClasses[size]} font-bold font-['Poppins'] tabular-nums`}
+          data-testid="text-coin-amount"
+        >
+          {animatedAmount}
+        </motion.span>
       </div>
       <p className="text-xs text-muted-foreground mt-1">CASET</p>
     </motion.div>
