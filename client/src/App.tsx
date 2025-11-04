@@ -17,7 +17,7 @@ import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <>
+    <div className="animate-fade-in">
       <Switch>
         <Route path="/" component={Dashboard} />
         <Route path="/games" component={Games} />
@@ -28,7 +28,7 @@ function Router() {
         <Route component={NotFound} />
       </Switch>
       <BottomNav />
-    </>
+    </div>
   );
 }
 

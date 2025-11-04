@@ -75,8 +75,14 @@ export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: Spi
           <motion.div
             className="w-full h-full rounded-full relative overflow-hidden shadow-2xl border-4 border-primary/30"
             style={{ rotate: rotation }}
-            animate={{ rotate: rotation }}
-            transition={{ duration: 4, ease: [0.34, 1.56, 0.64, 1] }}
+            animate={{ 
+              rotate: rotation,
+              scale: isSpinning ? [1, 1.05, 1] : 1,
+            }}
+            transition={{ 
+              rotate: { duration: 4, ease: [0.34, 1.56, 0.64, 1] },
+              scale: { duration: 0.3, repeat: isSpinning ? Infinity : 0 }
+            }}
           >
             {wheelSegments.map((segment, index) => {
               const angle = (360 / wheelSegments.length) * index;

@@ -336,6 +336,33 @@
     50% { transform: scale(1.02); }
   }
 
+  @keyframes bounce-in {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes slide-up {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.8); }
+  }
+
+  @keyframes rotate-coin {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+
   .animate-liquid-wave-1 {
     animation: liquid-wave-1 3s linear infinite;
   }
@@ -350,5 +377,25 @@
 
   .animate-mining-pulse {
     animation: mining-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-bounce-in {
+    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.5s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-in;
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-rotate-coin {
+    animation: rotate-coin 2s linear infinite;
   }
 }

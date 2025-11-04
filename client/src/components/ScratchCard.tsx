@@ -26,7 +26,7 @@ export default function ScratchCard({ reward, onScratch, cardId }: ScratchCardPr
 
     ctx.fillStyle = '#10b981';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     gradient.addColorStop(0, '#34d399');
     gradient.addColorStop(1, '#059669');
@@ -67,11 +67,11 @@ export default function ScratchCard({ reward, onScratch, cardId }: ScratchCardPr
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const pixels = imageData.data;
     let transparentPixels = 0;
-    
+
     for (let i = 3; i < pixels.length; i += 4) {
       if (pixels[i] === 0) transparentPixels++;
     }
-    
+
     const progress = (transparentPixels / (pixels.length / 4)) * 100;
     setScratchProgress(progress);
 
