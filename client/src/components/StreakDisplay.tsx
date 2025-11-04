@@ -22,9 +22,10 @@ export default function StreakDisplay({ streak, multiplier }: StreakDisplayProps
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
+      transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1], delay: 0.1 }}
+      style={{ willChange: 'opacity, transform' }}
     >
-    <Card className={`p-6 bg-gradient-to-br ${streakLevel.color} text-white overflow-hidden relative shadow-xl`} data-testid="card-streak">
+    <Card className={`p-6 bg-gradient-to-br ${streakLevel.color} text-white overflow-hidden relative shadow-xl`} data-testid="card-streak" style={{ willChange: 'transform' }}>
       <div className="absolute inset-0 backdrop-blur-sm bg-gradient-to-br from-white/10 to-transparent" />
       <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
       <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12" />

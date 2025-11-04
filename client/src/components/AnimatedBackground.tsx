@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 
 export default function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -8,12 +7,13 @@ export default function AnimatedBackground() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    // Optimized particle system for 120fps
     const particles: Array<{
       x: number;
       y: number;
@@ -25,23 +25,37 @@ export default function AnimatedBackground() {
       pulseSpeed: number;
     }> = [];
 
-    const particleCount = 50;
+    const particleCount = 35; // Reduced for better performance
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        radius: Math.random() * 100 + 50,
-        speedX: (Math.random() - 0.5) * 0.4,
-        speedY: (Math.random() - 0.5) * 0.4,
-        opacity: Math.random() * 0.12 + 0.03,
+        radius: Math.random() * 120 + 60,
+        speedX: (Math.random() - 0.5) * 0.5,
+        speedY: (Math.random() - 0.5) * 0.5,
+        opacity: Math.random() * 0.1 + 0.02,
         fadeDirection: Math.random() > 0.5 ? 1 : -1,
-        pulseSpeed: Math.random() * 0.001 + 0.0003
+        pulseSpeed: Math.random() * 0.0008 + 0.0002
       });
     }
 
-    function animate() {
+    let lastTime = 0;
+    const targetFPS = 120;
+    const frameTime = 1000 / targetFPS;
+
+    function animate(currentTime: number) {
       if (!ctx || !canvas) return;
+      
+      const deltaTime = currentTime - lastTime;
+      
+      // Throttle to maintain consistent frame rate
+      if (deltaTime < frameTime) {
+        requestAnimationFrame(animate);
+        return;
+      }
+      
+      lastTime = currentTime - (deltaTime % frameTime);
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -50,8 +64,8 @@ export default function AnimatedBackground() {
         particle.y += particle.speedY;
 
         particle.opacity += particle.fadeDirection * particle.pulseSpeed;
-        if (particle.opacity >= 0.15) particle.fadeDirection = -1;
-        if (particle.opacity <= 0.03) particle.fadeDirection = 1;
+        if (particle.opacity >= 0.12) particle.fadeDirection = -1;
+        if (particle.opacity <= 0.02) particle.fadeDirection = 1;
 
         if (particle.x < -particle.radius) particle.x = canvas.width + particle.radius;
         if (particle.x > canvas.width + particle.radius) particle.x = -particle.radius;
@@ -63,9 +77,8 @@ export default function AnimatedBackground() {
           particle.x, particle.y, particle.radius
         );
         
-        gradient.addColorStop(0, `rgba(16, 185, 129, ${particle.opacity * 0.9})`);
-        gradient.addColorStop(0.4, `rgba(16, 185, 129, ${particle.opacity * 0.4})`);
-        gradient.addColorStop(0.7, `rgba(16, 185, 129, ${particle.opacity * 0.15})`);
+        gradient.addColorStop(0, `rgba(16, 185, 129, ${particle.opacity * 0.8})`);
+        gradient.addColorStop(0.5, `rgba(16, 185, 129, ${particle.opacity * 0.3})`);
         gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
 
         ctx.fillStyle = gradient;
@@ -77,7 +90,7 @@ export default function AnimatedBackground() {
       requestAnimationFrame(animate);
     }
 
-    animate();
+    requestAnimationFrame(animate);
 
     const handleResize = () => {
       canvas.width = window.innerWidth;
@@ -93,40 +106,41 @@ export default function AnimatedBackground() {
 
   return (
     <>
+      {/* Canvas particles */}
       <canvas
         ref={canvasRef}
         className="fixed inset-0 pointer-events-none z-0"
-        style={{ opacity: 0.6 }}
+        style={{ 
+          opacity: 0.7,
+          willChange: 'transform'
+        }}
       />
       
-      <div className="fixed inset-0 pointer-events-none z-0">
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              width: `${Math.random() * 400 + 250}px`,
-              height: `${Math.random() * 400 + 250}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              background: `radial-gradient(circle, rgba(16, 185, 129, ${0.06 + Math.random() * 0.04}) 0%, rgba(16, 185, 129, ${0.02 + Math.random() * 0.02}) 50%, rgba(16, 185, 129, 0) 70%)`,
-              filter: 'blur(60px)',
-            }}
-            animate={{
-              x: [0, Math.random() * 150 - 75, Math.random() * 100 - 50, 0],
-              y: [0, Math.random() * 150 - 75, Math.random() * 100 - 50, 0],
-              scale: [1, 1.15, 1.05, 1],
-              opacity: [0.7, 1, 0.8, 0.7],
-            }}
-            transition={{
-              duration: Math.random() * 15 + 20,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: Math.random() * 5,
-            }}
-          />
-        ))}
+      {/* Liquid blobs - CSS animated for 120fps */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="liquid-blob liquid-blob-1" />
+        <div className="liquid-blob liquid-blob-2" />
+        <div className="liquid-blob liquid-blob-3" />
+        <div className="liquid-blob liquid-blob-4" />
+        <div className="liquid-blob liquid-blob-5" />
       </div>
+
+      {/* SVG liquid effect */}
+      <svg className="fixed inset-0 pointer-events-none z-0" style={{ opacity: 0.4 }}>
+        <defs>
+          <filter id="goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" />
+            <feBlend in="SourceGraphic" in2="goo" />
+          </filter>
+        </defs>
+        <g filter="url(#goo)">
+          <circle className="liquid-circle liquid-circle-1" r="80" fill="rgba(16, 185, 129, 0.3)" />
+          <circle className="liquid-circle liquid-circle-2" r="100" fill="rgba(16, 185, 129, 0.25)" />
+          <circle className="liquid-circle liquid-circle-3" r="90" fill="rgba(16, 185, 129, 0.28)" />
+          <circle className="liquid-circle liquid-circle-4" r="70" fill="rgba(16, 185, 129, 0.32)" />
+        </g>
+      </svg>
     </>
   );
 }

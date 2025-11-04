@@ -21,17 +21,19 @@ export default function EnergyDisplay({ energy, maxEnergy, nextRefillTime }: Ene
   };
 
   return (
-    <Card className="p-4 glass-card dark:glass-card-dark bg-gradient-to-br from-background to-primary/5" data-testid="card-energy">
+    <Card className="p-4 glass-card dark:glass-card-dark bg-gradient-to-br from-background to-primary/5" data-testid="card-energy" style={{ willChange: 'transform' }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+        style={{ willChange: 'opacity, transform' }}
       >
         <div className="flex items-center gap-3">
           <motion.div
             className={`w-12 h-12 rounded-full bg-gradient-to-br ${getEnergyColor()} flex items-center justify-center`}
             animate={!isFull ? { scale: [1, 1.1, 1] } : {}}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            style={{ willChange: 'transform' }}
           >
             {isFull ? (
               <Battery className="w-6 h-6 text-white" />

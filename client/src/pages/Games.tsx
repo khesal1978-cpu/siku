@@ -26,8 +26,9 @@ export default function Games() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0
+        staggerChildren: 0.04,
+        delayChildren: 0,
+        ease: [0.4, 0, 0.2, 1]
       }
     }
   };
@@ -38,8 +39,8 @@ export default function Games() {
       opacity: 1, 
       y: 0,
       transition: {
-        duration: 0.3,
-        ease: "easeOut"
+        duration: 0.25,
+        ease: [0.4, 0, 0.2, 1]
       }
     }
   };
@@ -240,16 +241,16 @@ export default function Games() {
 
         <Tabs defaultValue="spin" className="w-full">
           <TabsList className="grid w-full grid-cols-4 p-1">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
               <TabsTrigger value="spin" data-testid="tab-spin" className="w-full">Spin</TabsTrigger>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
               <TabsTrigger value="scratch" data-testid="tab-scratch" className="w-full">Scratch</TabsTrigger>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
               <TabsTrigger value="tasks" data-testid="tab-tasks" className="w-full">Tasks</TabsTrigger>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
               <TabsTrigger value="boosts" data-testid="tab-boosts" className="w-full">Boosts</TabsTrigger>
             </motion.div>
           </TabsList>
