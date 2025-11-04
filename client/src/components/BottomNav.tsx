@@ -1,11 +1,11 @@
-import { Home, Users, Wallet, Trophy, User } from 'lucide-react';
+import { Home, Gamepad2, Users, Wallet, User } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 
 const navItems = [
   { icon: Home, label: 'Mine', path: '/' },
+  { icon: Gamepad2, label: 'Games', path: '/games' },
   { icon: Users, label: 'Team', path: '/team' },
   { icon: Wallet, label: 'Wallet', path: '/wallet' },
-  { icon: Trophy, label: 'Ranks', path: '/leaderboard' },
   { icon: User, label: 'Profile', path: '/profile' },
 ];
 

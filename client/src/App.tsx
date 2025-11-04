@@ -8,6 +8,7 @@ import SplashScreen from '@/components/SplashScreen';
 import OnboardingModal from '@/components/OnboardingModal';
 import BottomNav from '@/components/BottomNav';
 import Dashboard from '@/pages/Dashboard';
+import Games from '@/pages/Games';
 import Team from '@/pages/Team';
 import Wallet from '@/pages/Wallet';
 import Leaderboard from '@/pages/Leaderboard';
@@ -19,6 +20,7 @@ function Router() {
     <>
       <Switch>
         <Route path="/" component={Dashboard} />
+        <Route path="/games" component={Games} />
         <Route path="/team" component={Team} />
         <Route path="/wallet" component={Wallet} />
         <Route path="/leaderboard" component={Leaderboard} />
