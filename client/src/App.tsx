@@ -16,6 +16,8 @@ import Wallet from '@/pages/Wallet';
 import Leaderboard from '@/pages/Leaderboard';
 import Profile from '@/pages/Profile';
 import NotFound from "@/pages/not-found";
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { WebSocketProvider } from '@/contexts/WebSocketContext';
 
 function Router() {
   return (
@@ -38,12 +40,11 @@ function Router() {
   );
 }
 
-function App() {
+function AppContent() {
   const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    //todo: remove mock functionality - check if user has seen onboarding
     const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
     if (!hasSeenOnboarding) {
       setShowOnboarding(true);
@@ -65,25 +66,49 @@ function App() {
   };
 
   return (
+    <div className="relative z-10">
+      {showSplash ? (
+        <SplashScreen onComplete={handleSplashComplete} />
+      ) : (
+        <>
+          <Router />
+          {showOnboarding && (
+            <OnboardingModal 
+              onComplete={handleOnboardingComplete}
+              onSkip={handleOnboardingSkip}
+            />
+          )}
+        </>
+      )}
+      <Toaster />
+    </div>
+  );
+}
+
+function AppWithProviders() {
+  return (
+    <AuthProvider>
+      <AppWithWebSocket />
+    </AuthProvider>
+  );
+}
+
+function AppWithWebSocket() {
+  const { userId } = useAuth();
+  
+  return (
+    <WebSocketProvider userId={userId}>
+      <AnimatedBackground />
+      <AppContent />
+    </WebSocketProvider>
+  );
+}
+
+function App() {
+  return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <AnimatedBackground />
-        <div className="relative z-10">
-          {showSplash ? (
-            <SplashScreen onComplete={handleSplashComplete} />
-          ) : (
-            <>
-              <Router />
-              {showOnboarding && (
-                <OnboardingModal 
-                  onComplete={handleOnboardingComplete}
-                  onSkip={handleOnboardingSkip}
-                />
-              )}
-            </>
-          )}
-          <Toaster />
-        </div>
+        <AppWithProviders />
       </TooltipProvider>
     </QueryClientProvider>
   );

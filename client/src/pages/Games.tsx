@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Gamepad2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,15 +11,42 @@ import StreakDisplay from '@/components/StreakDisplay';
 import CoinAnimation from '@/components/CoinAnimation';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useWebSocket } from '@/contexts/WebSocketContext';
 import backgroundImage from '@assets/generated_images/Green_gradient_wave_background_201c0817.png';
 import type { UserProfile, ScratchCard, Achievement, Boost } from '@shared/schema';
 import { motion } from 'framer-motion';
 
 export default function Games() {
   const { toast } = useToast();
+  const { userId } = useAuth();
+  const { subscribe } = useWebSocket();
   const [showCoinAnimation, setShowCoinAnimation] = useState(false);
   const [animationAmount, setAnimationAmount] = useState(0);
-  const userId = 'demo-user';
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const unsubscribeProfile = subscribe('profile_updated', (data: UserProfile) => {
+      queryClient.setQueryData(['/api/profile', userId], data);
+    });
+
+    const unsubscribeBoost = subscribe('boost_activated', (data: any) => {
+      queryClient.setQueryData(['/api/profile', userId], data.profile);
+      queryClient.invalidateQueries({ queryKey: ['/api/boosts', userId] });
+    });
+
+    const unsubscribeAchievement = subscribe('achievement_claimed', (data: any) => {
+      queryClient.setQueryData(['/api/profile', userId], data.profile);
+      queryClient.invalidateQueries({ queryKey: ['/api/achievements', userId] });
+    });
+
+    return () => {
+      unsubscribeProfile();
+      unsubscribeBoost();
+      unsubscribeAchievement();
+    };
+  }, [userId, subscribe]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
