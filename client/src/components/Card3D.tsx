@@ -27,6 +27,12 @@ export default function Card3D({ children, className = '', intensity = 'medium' 
           rotateY: config.rotateY,
           z: config.z,
         }}
+        whileTap={{
+          scale: config.scale,
+          rotateX: config.rotateX,
+          rotateY: config.rotateY,
+          z: config.z,
+        }}
         transition={{
           duration: 0.3,
           type: 'spring',

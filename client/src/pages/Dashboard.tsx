@@ -286,7 +286,11 @@ export default function Dashboard() {
               <motion.button 
                 onClick={handleMine}
                 disabled={startMiningMutation.isPending || claimMiningMutation.isPending || (isMining && progress < 100)}
-                className="absolute w-44 h-44 rounded-full bg-gradient-to-br from-primary to-emerald-400 shadow-2xl flex flex-col items-center justify-center text-center disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
+                className={`absolute w-44 h-44 rounded-full shadow-2xl flex flex-col items-center justify-center text-center disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden ${
+                  isMining 
+                    ? 'bg-gradient-to-br from-primary to-emerald-400' 
+                    : 'bg-gradient-to-br from-red-500 to-rose-600'
+                }`}
                 data-testid="button-mine"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -297,7 +301,11 @@ export default function Dashboard() {
                         "0 0 60px rgba(16, 185, 129, 0.6)",
                         "0 0 30px rgba(16, 185, 129, 0.4)",
                       ]
-                    : "0 0 30px rgba(16, 185, 129, 0.3)",
+                    : [
+                        "0 0 30px rgba(239, 68, 68, 0.4)",
+                        "0 0 60px rgba(239, 68, 68, 0.6)",
+                        "0 0 30px rgba(239, 68, 68, 0.4)",
+                      ],
                 }}
                 transition={{
                   boxShadow: {

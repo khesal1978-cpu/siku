@@ -11,15 +11,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!profile) {
         profile = await storage.createUserProfile({
           userId: req.params.userId,
-          balance: 1234.56,
+          balance: 0,
           energy: 100,
           maxEnergy: 100,
-          streak: 5,
+          streak: 0,
           lastLogin: new Date(),
           miningSpeed: 10,
           miningMultiplier: 1,
           lastEnergyRefill: new Date(),
-          totalMined: 1234.56
+          totalMined: 0
         });
 
         const defaultAchievements = [
@@ -30,7 +30,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             description: 'Log in to the app daily',
             reward: 100,
             isCompleted: false,
-            progress: 1,
+            progress: 0,
             target: 1
           },
           {
@@ -40,7 +40,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             description: 'Mine a total of 1000 CASET coins',
             reward: 500,
             isCompleted: false,
-            progress: 234,
+            progress: 0,
             target: 1000
           },
           {
@@ -60,7 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             description: 'Play mini-games 10 times',
             reward: 250,
             isCompleted: false,
-            progress: 3,
+            progress: 0,
             target: 10
           }
         ];

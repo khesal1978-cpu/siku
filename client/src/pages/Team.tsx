@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Users, TrendingUp, Copy, Share2 } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
+import Card3D from '@/components/Card3D';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWebSocket } from '@/contexts/WebSocketContext';
@@ -87,45 +88,51 @@ export default function Team() {
         <PageHeader title="My Team" subtitle="Build your network and earn together" />
 
         <div className="px-6 space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-br from-primary/90 to-primary p-6 rounded-xl shadow-xl shadow-primary/25 text-white"
-          >
-            <h2 className="text-lg font-semibold">Your Referral Code</h2>
-            <p className="text-sm text-white/80 mt-1">Share your code and earn rewards together!</p>
-            <div className="my-4 text-center bg-white/20 border-2 border-dashed border-white/50 rounded-lg py-3">
-              <span className="text-2xl font-bold tracking-widest text-white" data-testid="text-referral-code">{referralCode}</span>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={handleCopyCode}
-                className="flex items-center justify-center gap-2 py-3 rounded-lg bg-white/20 text-white font-medium active:scale-95 transition-transform backdrop-blur-sm"
-                data-testid="button-copy"
-              >
-                <Copy className="w-4 h-4" />
-                Copy
-              </button>
-              <button
-                onClick={handleShareCode}
-                className="flex items-center justify-center gap-2 py-3 rounded-lg bg-white text-primary font-bold shadow-md shadow-black/10 active:scale-95 transition-transform"
-                data-testid="button-share"
-              >
-                <Share2 className="w-4 h-4" fill="currentColor" />
-                Share
-              </button>
-            </div>
-          </motion.div>
+          <Card3D intensity="high">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-br from-primary/90 to-primary p-6 rounded-xl shadow-xl shadow-primary/25 text-white"
+            >
+              <h2 className="text-lg font-semibold">Your Referral Code</h2>
+              <p className="text-sm text-white/80 mt-1">Share your code and earn rewards together!</p>
+              <div className="my-4 text-center bg-white/20 border-2 border-dashed border-white/50 rounded-lg py-3">
+                <span className="text-2xl font-bold tracking-widest text-white" data-testid="text-referral-code">{referralCode}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={handleCopyCode}
+                  className="flex items-center justify-center gap-2 py-3 rounded-lg bg-white/20 text-white font-medium active:scale-95 transition-transform backdrop-blur-sm"
+                  data-testid="button-copy"
+                >
+                  <Copy className="w-4 h-4" />
+                  Copy
+                </button>
+                <button
+                  onClick={handleShareCode}
+                  className="flex items-center justify-center gap-2 py-3 rounded-lg bg-white text-primary font-bold shadow-md shadow-black/10 active:scale-95 transition-transform"
+                  data-testid="button-share"
+                >
+                  <Share2 className="w-4 h-4" fill="currentColor" />
+                  Share
+                </button>
+              </div>
+            </motion.div>
+          </Card3D>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-lg flex flex-col items-center justify-center text-center">
-              <p className="text-sm text-slate-500 dark:text-slate-400">Total Team</p>
-              <p className="text-4xl font-bold text-primary mt-1" data-testid="text-total-team">{totalReferrals}</p>
-            </div>
-            <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-lg flex flex-col items-center justify-center text-center">
-              <p className="text-sm text-slate-500 dark:text-slate-400">Team Earnings</p>
-              <p className="text-4xl font-bold text-primary mt-1" data-testid="text-team-earnings">{teamEarnings.toLocaleString()}</p>
-            </div>
+            <Card3D intensity="medium">
+              <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-lg flex flex-col items-center justify-center text-center">
+                <p className="text-sm text-slate-500 dark:text-slate-400">Total Team</p>
+                <p className="text-4xl font-bold text-primary mt-1" data-testid="text-total-team">{totalReferrals}</p>
+              </div>
+            </Card3D>
+            <Card3D intensity="medium">
+              <div className="bg-primary/5 dark:bg-primary/10 p-4 rounded-lg flex flex-col items-center justify-center text-center">
+                <p className="text-sm text-slate-500 dark:text-slate-400">Team Earnings</p>
+                <p className="text-4xl font-bold text-primary mt-1" data-testid="text-team-earnings">{teamEarnings.toLocaleString()}</p>
+              </div>
+            </Card3D>
           </div>
 
           <div>
@@ -140,35 +147,38 @@ export default function Team() {
 
             <div className="space-y-4">
               {directReferrals.length === 0 ? (
-                <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-sm text-center">
-                  <Users className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                  <p className="text-slate-500 dark:text-slate-400 font-semibold">No referrals yet</p>
-                  <p className="text-sm text-slate-400 dark:text-slate-500 mt-2">Share your referral code to start earning!</p>
-                </div>
+                <Card3D intensity="low">
+                  <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-sm text-center">
+                    <Users className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                    <p className="text-slate-500 dark:text-slate-400 font-semibold">No referrals yet</p>
+                    <p className="text-sm text-slate-400 dark:text-slate-500 mt-2">Share your referral code to start earning!</p>
+                  </div>
+                </Card3D>
               ) : (
                 directReferrals.map((referral, index) => (
-                  <div
-                    key={referral.id}
-                    className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-4"
-                    data-testid={`card-referral-${index}`}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
-                      {referral.id.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-grow">
-                      <div className="flex justify-between items-center">
-                        <h3 className="font-semibold text-base">Referral #{index + 1}</h3>
-                        <span className="text-sm font-medium text-green-500 flex items-center gap-1">
-                          <TrendingUp className="w-4 h-4" fill="currentColor" /> Active
-                        </span>
+                  <Card3D key={referral.id} intensity="low">
+                    <div
+                      className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-4"
+                      data-testid={`card-referral-${index}`}
+                    >
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
+                        {referral.id.charAt(0).toUpperCase()}
                       </div>
-                      <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 mt-1.5 space-x-3">
-                        <span className="flex items-center gap-1">
-                          <span className="text-primary/70">💰</span> {referral.rewardClaimed ? '500 CASET' : 'Pending'}
-                        </span>
+                      <div className="flex-grow">
+                        <div className="flex justify-between items-center">
+                          <h3 className="font-semibold text-base">Referral #{index + 1}</h3>
+                          <span className="text-sm font-medium text-green-500 flex items-center gap-1">
+                            <TrendingUp className="w-4 h-4" fill="currentColor" /> Active
+                          </span>
+                        </div>
+                        <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 mt-1.5 space-x-3">
+                          <span className="flex items-center gap-1">
+                            <span className="text-primary/70">💰</span> {referral.rewardClaimed ? '500 CASET' : 'Pending'}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Card3D>
                 ))
               )}
             </div>
