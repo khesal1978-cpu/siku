@@ -68,13 +68,13 @@ export default function Wallet() {
 
         <div className="px-6 space-y-8">
           <Card3D intensity="high">
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl shadow-primary/10 p-6 relative overflow-hidden">
+            <div className="relative overflow-hidden glass-ultra dark:glass-ultra-dark p-4 depth-md hover-lift">
               <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full"></div>
               <div className="absolute -bottom-16 -left-8 w-40 h-40 bg-primary/10 rounded-full"></div>
-              
+
               <div className="relative z-10 text-center">
                 <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-2">Available Balance</p>
-                <motion.div 
+                <motion.div
                   className="flex items-center justify-center gap-2"
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}

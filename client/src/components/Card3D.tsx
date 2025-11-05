@@ -89,10 +89,11 @@ export default function Card3D({ children, className = '', intensity = 'medium' 
         <motion.div
           style={{
             filter: isHovered && !isMobile 
-              ? `drop-shadow(0 ${config.shadow}px ${config.shadow * 2}px rgba(0, 0, 0, 0.15))`
+              ? `drop-shadow(0 ${config.shadow}px ${config.shadow * 2}px rgba(0, 0, 0, 0.15)) brightness(1.02) saturate(1.1)`
               : 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08))',
           }}
           transition={{ duration: 0.3 }}
+          className="gpu-accelerated"
         >
           {children}
         </motion.div>

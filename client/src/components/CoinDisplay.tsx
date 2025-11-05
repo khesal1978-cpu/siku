@@ -85,9 +85,9 @@ export default function CoinDisplay({ amount, label = 'Balance', size = 'lg', sh
             ease: "easeInOut"
           }}
         />
-        
+
         <motion.span 
-          className={`${sizeClasses[size]} font-bold font-['Poppins'] tabular-nums`}
+          className={`${sizeClasses[size]} font-bold font-['Poppins'] tabular-nums gradient-text-primary drop-shadow-lg animate-text-shimmer`}
           data-testid="text-coin-amount"
         >
           {animatedAmount}

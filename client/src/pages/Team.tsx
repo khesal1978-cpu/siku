@@ -122,7 +122,8 @@ export default function Team() {
                   Share
                 </button>
               </div>
-            </motion.div>
+            </div>
+          </motion.div>
           </Card3D>
 
           <div className="grid grid-cols-2 gap-4">

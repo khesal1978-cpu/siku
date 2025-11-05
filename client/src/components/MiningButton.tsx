@@ -1,8 +1,8 @@
-
 import { Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
+import clsx from 'clsx'; // Assuming clsx is available for conditional class names
 
 interface MiningButtonProps {
   isActive: boolean;
@@ -13,7 +13,7 @@ interface MiningButtonProps {
 
 export default function MiningButton({ isActive, progress, onMine, disabled }: MiningButtonProps) {
   const liquidHeight = 200 - (200 * progress / 100);
-  
+
   // Reduce particles for better performance
   const particles = useMemo(() => {
     if (!isActive) return [];
@@ -25,12 +25,16 @@ export default function MiningButton({ isActive, progress, onMine, disabled }: M
     }));
   }, [isActive]);
 
+  // Determine if the button can be mined
+  const canMine = !disabled && isActive;
+  const isMining = isActive && progress < 100;
+
   return (
     <div className="relative flex flex-col items-center" data-testid="mining-button-container">
-      <motion.div 
+      <motion.div
         initial={{ scale: 1 }}
         whileHover={{ scale: disabled ? 1 : 1.03 }}
-        whileTap={{ scale: disabled ? 1 : 0.97 }}
+        whileTap={{ scale: disabled ? 1 : 0.95 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
       >
         <Button
@@ -38,7 +42,12 @@ export default function MiningButton({ isActive, progress, onMine, disabled }: M
           onClick={onMine}
           disabled={disabled}
           data-testid="button-mine"
-          className="w-48 h-48 md:w-56 md:h-56 rounded-full relative overflow-hidden shadow-xl bg-gradient-to-br from-muted/30 via-muted/20 to-card border-4 border-primary/30 will-change-transform"
+          className={clsx(
+            "relative w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden shadow-xl will-change-transform",
+            (canMine && !isMining)
+              ? "bg-gradient-to-br from-primary/70 via-primary/50 to-primary/30 border-2 border-primary/50 cursor-pointer neon-border-primary animate-glow-pulse"
+              : "bg-gradient-to-br from-muted/30 to-muted/10 border-2 border-muted/30 cursor-not-allowed opacity-70"
+          )}
         >
           <svg
             className="absolute inset-0 w-full h-full"
@@ -65,7 +74,7 @@ export default function MiningButton({ isActive, progress, onMine, disabled }: M
                 fill="url(#liquidGradient)"
                 className={isActive ? 'transition-all duration-700 ease-out' : 'transition-all duration-300'}
               />
-              
+
               {/* Single wave overlay for active state */}
               {isActive && (
                 <path

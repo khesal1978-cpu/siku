@@ -99,7 +99,7 @@ export default function Dashboard() {
       const now = new Date();
       const startedAt = new Date(miningSession.startedAt);
       const endsAt = new Date(miningSession.endsAt);
-      
+
       const totalDuration = endsAt.getTime() - startedAt.getTime();
       const elapsed = now.getTime() - startedAt.getTime();
       const remaining = endsAt.getTime() - now.getTime();
@@ -151,9 +151,13 @@ export default function Dashboard() {
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-900 pb-28">
-      <div className="absolute inset-x-0 top-0 h-96 w-full bg-gradient-to-b from-[#d1fae5] dark:from-emerald-900/20 to-[#f8fafc] dark:to-slate-900 pointer-events-none" />
-      
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-900 pb-28 morphing-bg">
+      <div className="absolute inset-x-0 top-0 h-96 overflow-hidden bg-gradient-to-b from-teal-400/20 via-teal-100/20 to-transparent dark:from-teal-900/15 dark:via-teal-950/10">
+        <div className="absolute -top-1/4 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-teal-500/15 dark:bg-teal-500/10 blur-3xl animate-smooth-pulse"></div>
+        <div className="absolute top-10 -left-20 h-64 w-64 rounded-full bg-teal-500/10 dark:bg-teal-500/5 blur-3xl animate-particle-float"></div>
+        <div className="absolute top-5 -right-20 h-64 w-64 rounded-full bg-teal-400/10 dark:bg-teal-400/5 blur-3xl animate-particle-float" style={{ animationDelay: '1s' }}></div>
+      </div>
+
       <div className="absolute inset-0 opacity-50 pointer-events-none" style={{
         backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2334d399' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
       }} />
@@ -178,7 +182,7 @@ export default function Dashboard() {
                 </div>
               </motion.div>
             </Card3D>
-            
+
             {/* Energy indicator */}
             <Card3D intensity="medium">
               <motion.div
@@ -235,7 +239,7 @@ export default function Dashboard() {
                   delay: 0.5
                 }}
               />
-              
+
               {/* Floating sparkles */}
               {[...Array(8)].map((_, i) => {
                 const angle = (i * 360) / 8;
@@ -264,7 +268,7 @@ export default function Dashboard() {
                   />
                 );
               })}
-              
+
               <div className="absolute inset-8 rounded-full bg-white/70 dark:bg-slate-800/70 shadow-inner border border-white/80 dark:border-slate-700"></div>
               <svg className="w-full h-full transform -rotate-90 p-8" viewBox="0 0 100 100">
                 <circle className="text-slate-200 dark:text-slate-700" cx="50" cy="50" fill="transparent" r="45" stroke="currentColor" strokeWidth="10"></circle>
@@ -282,7 +286,7 @@ export default function Dashboard() {
                   style={{ transition: 'stroke-dashoffset 0.3s ease' }}
                 ></circle>
               </svg>
-              
+
               <motion.button 
                 onClick={handleMine}
                 disabled={startMiningMutation.isPending || claimMiningMutation.isPending || (isMining && progress < 100)}
@@ -320,7 +324,7 @@ export default function Dashboard() {
                     repeatDelay: 1
                   }}
                 />
-                
+
                 <motion.div
                   animate={isMining ? {
                     rotate: 360,
@@ -347,7 +351,7 @@ export default function Dashboard() {
                 </motion.p>
               </motion.button>
             </div>
-            
+
             {isMining && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -361,7 +365,7 @@ export default function Dashboard() {
                 <p className="font-semibold text-emerald-700 dark:text-emerald-300">Mining Active</p>
               </motion.div>
             )}
-            
+
             {progress === 100 && (
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
@@ -412,7 +416,7 @@ export default function Dashboard() {
               </div>
             </Card3D>
           </div>
-          
+
           {/* Quick tips and stats section */}
           <div className="md:col-span-2 px-6 mt-8 grid md:grid-cols-2 gap-6">
             <Card3D intensity="low">
@@ -435,7 +439,7 @@ export default function Dashboard() {
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Keep mining daily to maintain your streak! 🔥</p>
               </motion.div>
             </Card3D>
-            
+
             <Card3D intensity="low">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
