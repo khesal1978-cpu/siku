@@ -101,19 +101,28 @@ Preferred communication style: Simple, everyday language.
 - Designed to support email, Google, and phone authentication
 - Session management prepared via connect-pg-simple
 
-## Recent Changes (November 4, 2025)
+## Recent Changes (November 5, 2025)
+
+**Mining & Reward System Updates**
+- ✅ Mining speed reduced from 10 to 2 CASET per hour for better economy balance
+- ✅ Referral rewards updated: inviter receives 200 coins, invited user receives 400 coins
+- ✅ Referral mining multiplier set to 1.4x per referral (scales with team size)
+- ✅ Achievement rewards adjusted: Daily Login (5), Mine 1000 (100), Invite 5 Friends (100), Play 10 Games (50)
+- ✅ Real-time earnings display integrated into Mining Balance card
+- ✅ Earnings calculation properly capped to prevent display bugs after session completion
+- ✅ UI text updated across onboarding and team pages to reflect new values
 
 **Real-Time Integration Complete**
 - ✅ WebSocket server implemented for real-time updates across all features
 - ✅ WebSocketContext and AuthContext created for frontend state management
 - ✅ All major pages connected to real backend APIs with React Query
-- ✅ Dashboard: Real-time mining session tracking and profile updates
+- ✅ Dashboard: Real-time mining session tracking with live earnings updates
 - ✅ Wallet: Live transaction history and balance updates
 - ✅ Team: Real referral tracking with WebSocket notifications
 - ✅ Games: Spin wheel, scratch cards, and achievements fully functional with real-time updates
 - ✅ Profile: Real user data with logout functionality
 - ✅ Energy system working with 5-minute refill intervals
-- ✅ Mining cycles properly track 6-hour sessions at 10 coins/hour
+- ✅ Mining cycles properly track 6-hour sessions at 2 coins/hour
 
 **Remaining Mock Data**
 - Leaderboard page still uses mock data (backend endpoint not yet implemented)
