@@ -189,24 +189,29 @@ export default function Games() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                className="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 shadow-md"
+                className="relative overflow-hidden rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 shadow-md"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Zap className="w-6 h-6 text-green-500" fill="currentColor" />
-                    <span className="font-semibold text-slate-700 dark:text-slate-200">Energy</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2s_ease-in-out_infinite]" />
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Zap className="w-6 h-6 text-green-500" fill="currentColor" />
+                      <span className="font-semibold text-slate-700 dark:text-slate-200">Energy</span>
+                    </div>
+                    <span className="font-bold text-green-500" data-testid="text-energy">{profile?.energy ?? 100}/{profile?.maxEnergy ?? 100}</span>
                   </div>
-                  <span className="font-bold text-green-500" data-testid="text-energy">{profile?.energy ?? 100}/{profile?.maxEnergy ?? 100}</span>
+                  <div className="mt-3 h-3.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 p-0.5">
+                    <div 
+                      className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.5)] transition-all relative overflow-hidden"
+                      style={{ width: `${((profile?.energy ?? 100) / (profile?.maxEnergy ?? 100)) * 100}%` }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full animate-[shimmer_1.5s_ease-in-out_infinite]" />
+                    </div>
+                  </div>
+                  <p className="mt-2 text-center text-xs font-medium text-green-600">
+                    {(profile?.energy ?? 100) === (profile?.maxEnergy ?? 100) ? 'Fully Charged!' : 'Recharging...'}
+                  </p>
                 </div>
-                <div className="mt-3 h-3.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 p-0.5">
-                  <div 
-                    className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.5)] transition-all"
-                    style={{ width: `${((profile?.energy ?? 100) / (profile?.maxEnergy ?? 100)) * 100}%` }}
-                  ></div>
-                </div>
-                <p className="mt-2 text-center text-xs font-medium text-green-600">
-                  {(profile?.energy ?? 100) === (profile?.maxEnergy ?? 100) ? 'Fully Charged!' : 'Recharging...'}
-                </p>
               </motion.div>
             </Card3D>
 
@@ -216,15 +221,19 @@ export default function Games() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
-                  className="rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 p-4 text-white shadow-lg shadow-teal-500/30"
+                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 p-4 text-white shadow-lg shadow-teal-500/30"
                 >
-                  <div className="flex items-center gap-2">
-                    <GiftIcon className="w-5 h-5 opacity-80" />
-                    <p className="text-sm font-medium">Login Streak</p>
-                  </div>
-                  <div className="mt-1 flex items-baseline gap-1.5">
-                    <span className="text-4xl font-bold" data-testid="text-streak">{profile?.streak ?? 0}</span>
-                    <span className="text-lg font-semibold">Days</span>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-50" />
+                  <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-white/10 rounded-full blur-2xl" />
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2">
+                      <GiftIcon className="w-5 h-5 opacity-80" />
+                      <p className="text-sm font-medium">Login Streak</p>
+                    </div>
+                    <div className="mt-1 flex items-baseline gap-1.5">
+                      <span className="text-4xl font-bold drop-shadow-lg" data-testid="text-streak">{profile?.streak ?? 0}</span>
+                      <span className="text-lg font-semibold">Days</span>
+                    </div>
                   </div>
                 </motion.div>
               </Card3D>
@@ -233,14 +242,18 @@ export default function Games() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.15 }}
-                  className="rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-4 text-white shadow-lg shadow-amber-500/30"
+                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-4 text-white shadow-lg shadow-amber-500/30"
                 >
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 opacity-80" />
-                    <p className="text-sm font-medium">Multiplier</p>
-                  </div>
-                  <div className="mt-1 flex items-baseline gap-1">
-                    <span className="text-4xl font-bold" data-testid="text-multiplier">{multiplier.toFixed(1)}x</span>
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-50" />
+                  <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-white/10 rounded-full blur-2xl" />
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5 opacity-80" />
+                      <p className="text-sm font-medium">Multiplier</p>
+                    </div>
+                    <div className="mt-1 flex items-baseline gap-1">
+                      <span className="text-4xl font-bold drop-shadow-lg" data-testid="text-multiplier">{multiplier.toFixed(1)}x</span>
+                    </div>
                   </div>
                 </motion.div>
               </Card3D>

@@ -93,13 +93,17 @@ export default function Team() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-gradient-to-br from-primary/90 to-primary p-6 rounded-xl shadow-xl shadow-primary/25 text-white"
+              className="relative overflow-hidden bg-gradient-to-br from-primary/90 to-primary p-6 rounded-xl shadow-xl shadow-primary/25 text-white"
             >
-              <h2 className="text-lg font-semibold">Your Referral Code</h2>
-              <p className="text-sm text-white/80 mt-1">Share your code and earn rewards together!</p>
-              <div className="my-4 text-center bg-white/20 border-2 border-dashed border-white/50 rounded-lg py-3">
-                <span className="text-2xl font-bold tracking-widest text-white" data-testid="text-referral-code">{referralCode}</span>
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent" />
+              <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-white/5 rounded-full blur-3xl animate-pulse" />
+              <div className="relative z-10">
+                <h2 className="text-lg font-semibold">Your Referral Code</h2>
+                <p className="text-sm text-white/80 mt-1">Share your code and earn rewards together!</p>
+                <div className="my-4 text-center bg-white/20 border-2 border-dashed border-white/50 rounded-lg py-3 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2s_ease-in-out_infinite]" />
+                  <span className="relative text-2xl font-bold tracking-widest text-white drop-shadow-lg" data-testid="text-referral-code">{referralCode}</span>
+                </div>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={handleCopyCode}
@@ -127,10 +131,13 @@ export default function Team() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.05 }}
-                className="bg-primary/5 dark:bg-primary/10 p-4 rounded-lg flex flex-col items-center justify-center text-center"
+                className="relative overflow-hidden bg-primary/5 dark:bg-primary/10 p-4 rounded-lg flex flex-col items-center justify-center text-center"
               >
-                <p className="text-sm text-slate-500 dark:text-slate-400">Total Team</p>
-                <p className="text-4xl font-bold text-primary mt-1" data-testid="text-total-team">{totalReferrals}</p>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
+                <div className="relative z-10">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Total Team</p>
+                  <p className="text-4xl font-bold text-primary mt-1 drop-shadow-sm" data-testid="text-total-team">{totalReferrals}</p>
+                </div>
               </motion.div>
             </Card3D>
             <Card3D intensity="medium">
@@ -138,10 +145,13 @@ export default function Team() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
-                className="bg-primary/5 dark:bg-primary/10 p-4 rounded-lg flex flex-col items-center justify-center text-center"
+                className="relative overflow-hidden bg-primary/5 dark:bg-primary/10 p-4 rounded-lg flex flex-col items-center justify-center text-center"
               >
-                <p className="text-sm text-slate-500 dark:text-slate-400">Team Earnings</p>
-                <p className="text-4xl font-bold text-primary mt-1" data-testid="text-team-earnings">{teamEarnings.toLocaleString()}</p>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
+                <div className="relative z-10">
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Team Earnings</p>
+                  <p className="text-4xl font-bold text-primary mt-1 drop-shadow-sm" data-testid="text-team-earnings">{teamEarnings.toLocaleString()}</p>
+                </div>
               </motion.div>
             </Card3D>
           </div>
