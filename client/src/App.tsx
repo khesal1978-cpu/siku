@@ -15,6 +15,9 @@ import Team from '@/pages/Team';
 import Wallet from '@/pages/Wallet';
 import Leaderboard from '@/pages/Leaderboard';
 import Profile from '@/pages/Profile';
+import Settings from '@/pages/Settings';
+import Terms from '@/pages/Terms';
+import HelpCenter from '@/pages/HelpCenter';
 import NotFound from "@/pages/not-found";
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { WebSocketProvider } from '@/contexts/WebSocketContext';
@@ -33,6 +36,9 @@ function Router() {
         <Route path="/wallet" component={Wallet} />
         <Route path="/leaderboard" component={Leaderboard} />
         <Route path="/profile" component={Profile} />
+        <Route path="/settings" component={Settings} />
+        <Route path="/terms" component={Terms} />
+        <Route path="/help" component={HelpCenter} />
         <Route component={NotFound} />
       </Switch>
       <BottomNav />

@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Zap, TrendingUp, Clock, Users } from 'lucide-react';
-import MiningButton from '@/components/MiningButton';
-import CoinDisplay from '@/components/CoinDisplay';
-import StatsCard from '@/components/StatsCard';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import backgroundImage from '@assets/generated_images/Green_gradient_wave_background_201c0817.png';
+import { Zap, TrendingUp, Clock } from 'lucide-react';
+import PageHeader from '@/components/PageHeader';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWebSocket } from '@/contexts/WebSocketContext';
@@ -137,32 +132,9 @@ export default function Dashboard() {
     }
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.03,
-        delayChildren: 0
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 5 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.2,
-        ease: "easeOut"
-      }
-    }
-  };
-
   if (profileLoading || !profile) {
     return (
-      <div className="min-h-screen bg-background pb-20">
+      <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-900 pb-24">
         <div className="px-4 pt-6 space-y-6">
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-64 w-64 mx-auto rounded-full" />
@@ -174,109 +146,111 @@ export default function Dashboard() {
 
   const miningSpeed = profile.miningSpeed * profile.miningMultiplier;
   const isMining = miningSession?.isActive || false;
+  const circumference = 2 * Math.PI * 45;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <motion.div 
-      className="min-h-screen bg-background pb-20"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <div 
-        className="relative h-56 -mb-8"
-        style={{
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-background/60 to-background" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
-        <div className="relative h-full flex items-end p-6 pb-12">
-          <div>
-            <motion.h1 
-              className="text-3xl font-bold font-['Poppins'] text-foreground mb-1 drop-shadow-lg"
-              variants={itemVariants}
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-900 pb-28">
+      <div className="absolute inset-x-0 top-0 h-96 w-full bg-gradient-to-b from-[#d1fae5] dark:from-emerald-900/20 to-[#f8fafc] dark:to-slate-900 pointer-events-none" />
+      
+      <div className="absolute inset-0 opacity-50 pointer-events-none" style={{
+        backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2334d399' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
+      }} />
+
+      <div className="relative z-10 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="md:col-span-2">
+            <PageHeader title="Mining Dashboard" subtitle="Keep mining to earn more rewards" />
+          </div>
+
+          <div className="md:col-span-2 lg:col-span-1 px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center p-6 bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-2xl shadow-lg border border-white/80 dark:border-slate-700"
             >
-              Mining Dashboard
-            </motion.h1>
-            <motion.p 
-              className="text-sm text-muted-foreground drop-shadow"
-              variants={itemVariants}
-            >
-              Keep mining to earn more rewards
-            </motion.p>
+              <p className="text-base font-medium text-slate-500 dark:text-slate-400">Mining Balance</p>
+              <div className="flex items-baseline justify-center gap-2 mt-2">
+                <h2 className="text-5xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-balance">{profile.balance.toLocaleString()}</h2>
+                <span className="text-xl font-semibold text-slate-600 dark:text-slate-400">CASET</span>
+              </div>
+            </motion.div>
+          </div>
+
+          <div className="md:col-span-2 lg:col-span-1 flex flex-col items-center px-6">
+            <div className="relative w-56 h-56 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full bg-white/70 dark:bg-slate-800/70 shadow-inner border border-white/80 dark:border-slate-700"></div>
+              <svg className="w-full h-full transform -rotate-90 p-3" viewBox="0 0 100 100">
+                <circle className="text-slate-200 dark:text-slate-700" cx="50" cy="50" fill="transparent" r="45" stroke="currentColor" strokeWidth="10"></circle>
+                <circle 
+                  className="text-primary drop-shadow-lg" 
+                  cx="50" 
+                  cy="50" 
+                  fill="transparent" 
+                  r="45" 
+                  stroke="currentColor" 
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round" 
+                  strokeWidth="10"
+                  style={{ transition: 'stroke-dashoffset 0.3s ease' }}
+                ></circle>
+              </svg>
+              <button 
+                onClick={handleMine}
+                disabled={startMiningMutation.isPending || claimMiningMutation.isPending || (isMining && progress < 100)}
+                className="absolute w-40 h-40 rounded-full bg-gradient-to-br from-primary to-emerald-400 shadow-2xl shadow-primary/40 flex flex-col items-center justify-center text-center transition-transform active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                data-testid="button-mine"
+              >
+                <Zap className="text-white w-12 h-12 drop-shadow-md" fill="white" />
+                <p className="text-3xl font-bold text-white drop-shadow-md">{Math.round(progress)}%</p>
+              </button>
+            </div>
+            
+            {isMining && (
+              <div className="mt-8 flex items-center justify-center gap-2 z-10 px-6 py-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full border border-primary/20 shadow-md">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-700 dark:bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-700 dark:bg-emerald-400"></span>
+                </span>
+                <p className="font-semibold text-emerald-700 dark:text-emerald-300">Mining Active</p>
+              </div>
+            )}
+          </div>
+
+          <div className="md:col-span-2 px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 rounded-2xl flex flex-col items-start gap-3 shadow-md border border-white/80 dark:border-slate-700">
+              <div className="bg-primary/10 p-2.5 rounded-lg border border-primary/10">
+                <Zap className="text-primary w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Mining Speed</p>
+                <p className="text-xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-mining-speed">{miningSpeed.toFixed(1)}/hr</p>
+              </div>
+            </div>
+
+            <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 rounded-2xl flex flex-col items-start gap-3 shadow-md border border-white/80 dark:border-slate-700">
+              <div className="bg-primary/10 p-2.5 rounded-lg border border-primary/10">
+                <TrendingUp className="text-primary w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Total Mined</p>
+                <p className="text-xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-total-mined">{profile.totalMined.toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div className="md:col-span-2 lg:col-span-1 bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 rounded-2xl flex items-center gap-4 shadow-md border border-white/80 dark:border-slate-700">
+              <div className="bg-primary/10 p-3 rounded-lg border border-primary/10">
+                <Clock className="text-primary w-8 h-8" />
+              </div>
+              <div>
+                <p className="text-base text-slate-500 dark:text-slate-400">Next Mining Cycle</p>
+                <p className="text-2xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-time-remaining">{isMining ? timeRemaining : "Ready to start"}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <div className="px-4 space-y-6">
-        <motion.div variants={itemVariants}>
-          <CoinDisplay amount={profile.balance} label="Mining Balance" size="xl" data-testid="text-balance" />
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="flex justify-center py-6">
-          <MiningButton 
-            isActive={isMining} 
-            progress={progress} 
-            onMine={handleMine}
-            data-testid="button-mine"
-          />
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="grid grid-cols-1 gap-3">
-          <StatsCard 
-            icon={Zap} 
-            label="Mining Speed" 
-            value={`${miningSpeed.toFixed(1)} CASET/hr`}
-            subtext={profile.miningMultiplier > 1 ? `${profile.miningMultiplier}x multiplier active` : undefined}
-            variant="highlight"
-            data-testid="text-mining-speed"
-          />
-          <StatsCard 
-            icon={TrendingUp} 
-            label="Total Mined" 
-            value={profile.totalMined.toLocaleString()}
-            data-testid="text-total-mined"
-          />
-          <StatsCard 
-            icon={Clock} 
-            label={isMining ? "Time Remaining" : "Next Mining"} 
-            value={isMining ? timeRemaining : "Ready to start"}
-            subtext="6-hour cycle"
-            data-testid="text-time-remaining"
-          />
-        </motion.div>
-
-        <motion.div variants={itemVariants}>
-          <Card className="p-6 glass-card dark:glass-card-dark">
-            <h3 className="font-bold text-lg mb-3">Boost Your Earnings</h3>
-            <div className="space-y-3">
-              <motion.div 
-                className="flex items-center justify-between p-3 bg-primary/5 rounded-lg border border-primary/10 backdrop-blur-sm transition-all duration-300"
-                whileHover={{ x: 5, scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="flex items-center gap-3">
-                  <motion.div
-                    animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                  >
-                    <Users className="w-5 h-5 text-primary" />
-                  </motion.div>
-                  <div>
-                    <p className="font-semibold text-sm">Invite Friends</p>
-                    <p className="text-xs text-muted-foreground">+500 coins per invite</p>
-                  </div>
-                </div>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button size="sm" data-testid="button-invite-friends">Invite</Button>
-                </motion.div>
-              </motion.div>
-            </div>
-          </Card>
-        </motion.div>
-      </div>
-    </motion.div>
+    </div>
   );
 }

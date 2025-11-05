@@ -1,19 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Gamepad2 } from 'lucide-react';
+import { Gamepad2, Zap, TrendingUp, GiftIcon } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SpinWheel from '@/components/SpinWheel';
 import { ScratchCardList } from '@/components/ScratchCard';
 import DailyTasks from '@/components/DailyTasks';
 import BoostCard from '@/components/BoostCard';
-import EnergyDisplay from '@/components/EnergyDisplay';
-import StreakDisplay from '@/components/StreakDisplay';
 import CoinAnimation from '@/components/CoinAnimation';
+import PageHeader from '@/components/PageHeader';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWebSocket } from '@/contexts/WebSocketContext';
-import backgroundImage from '@assets/generated_images/Green_gradient_wave_background_201c0817.png';
 import type { UserProfile, ScratchCard, Achievement, Boost } from '@shared/schema';
 import { motion } from 'framer-motion';
 
@@ -47,30 +45,6 @@ export default function Games() {
       unsubscribeAchievement();
     };
   }, [userId, subscribe]);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.04,
-        delayChildren: 0,
-        ease: [0.4, 0, 0.2, 1]
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.25,
-        ease: [0.4, 0, 0.2, 1]
-      }
-    }
-  };
 
   const { data: profile } = useQuery<UserProfile>({
     queryKey: ['/api/profile', userId],
@@ -194,134 +168,110 @@ export default function Games() {
     await activateBoostMutation.mutateAsync(boostType);
   };
 
-  const getNextRefillTime = () => {
-    if (!profile) return '5m';
-    const now = new Date();
-    const lastRefill = new Date(profile.lastEnergyRefill);
-    const nextRefill = new Date(lastRefill.getTime() + 5 * 60 * 1000);
-    const diff = nextRefill.getTime() - now.getTime();
-
-    if (diff <= 0) return 'Now';
-    const minutes = Math.floor(diff / 60000);
-    const seconds = Math.floor((diff % 60000) / 1000);
-    return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
-  };
-
   const multiplier = profile ? 1 + (profile.streak * 0.1) : 1;
 
   return (
-    <motion.div 
-      className="min-h-screen bg-background pb-20"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <div 
-        className="relative h-40 mb-4"
-        style={{
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-background/60 to-background" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
-        <div className="relative h-full flex items-end p-6 pb-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ duration: 0.5, ease: "backOut" }}
-              >
-                <Gamepad2 className="w-8 h-8 text-primary" />
-              </motion.div>
-              <h1 className="text-3xl font-bold font-['Poppins'] text-foreground drop-shadow-lg">
-                Mini Games
-              </h1>
-            </div>
-            <p className="text-sm text-muted-foreground drop-shadow">Play games to earn bonus coins</p>
-          </motion.div>
-        </div>
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-900 pb-28">
+      <div className="absolute inset-x-0 top-0 h-80 overflow-hidden bg-gradient-to-b from-teal-400/30 via-teal-100/30 to-transparent dark:from-teal-900/20 dark:via-teal-950/10">
+        <div className="absolute -top-1/4 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-teal-500/20 dark:bg-teal-500/10 blur-3xl"></div>
+        <div className="absolute top-10 -left-20 h-64 w-64 rounded-full bg-teal-500/15 dark:bg-teal-500/10 blur-3xl"></div>
+        <div className="absolute top-5 -right-20 h-64 w-64 rounded-full bg-teal-400/15 dark:bg-teal-400/10 blur-3xl"></div>
       </div>
 
-      <div className="px-4 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <motion.div variants={itemVariants}>
-            <EnergyDisplay 
-              energy={profile?.energy ?? 100} 
-              maxEnergy={profile?.maxEnergy ?? 100}
-              nextRefillTime={getNextRefillTime()}
-            />
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <StreakDisplay 
-              streak={profile?.streak ?? 0}
-              multiplier={multiplier}
-            />
-          </motion.div>
+      <div className="relative z-10 max-w-6xl mx-auto">
+        <PageHeader title="Mini Games" subtitle="Play games to earn bonus coins" />
+
+        <div className="px-6 space-y-6">
+          <div className="grid md:grid-cols-2 gap-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 shadow-md"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Zap className="w-6 h-6 text-green-500" fill="currentColor" />
+                  <span className="font-semibold text-slate-700 dark:text-slate-200">Energy</span>
+                </div>
+                <span className="font-bold text-green-500" data-testid="text-energy">{profile?.energy ?? 100}/{profile?.maxEnergy ?? 100}</span>
+              </div>
+              <div className="mt-3 h-3.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 p-0.5">
+                <div 
+                  className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.5)] transition-all"
+                  style={{ width: `${((profile?.energy ?? 100) / (profile?.maxEnergy ?? 100)) * 100}%` }}
+                ></div>
+              </div>
+              <p className="mt-2 text-center text-xs font-medium text-green-600">
+                {(profile?.energy ?? 100) === (profile?.maxEnergy ?? 100) ? 'Fully Charged!' : 'Recharging...'}
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 p-4 text-white shadow-lg shadow-teal-500/30">
+                <div className="flex items-center gap-2">
+                  <GiftIcon className="w-5 h-5 opacity-80" />
+                  <p className="text-sm font-medium">Login Streak</p>
+                </div>
+                <div className="mt-1 flex items-baseline gap-1.5">
+                  <span className="text-4xl font-bold" data-testid="text-streak">{profile?.streak ?? 0}</span>
+                  <span className="text-lg font-semibold">Days</span>
+                </div>
+              </div>
+              <div className="rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-4 text-white shadow-lg shadow-amber-500/30">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 opacity-80" />
+                  <p className="text-sm font-medium">Multiplier</p>
+                </div>
+                <div className="mt-1 flex items-baseline gap-1">
+                  <span className="text-4xl font-bold" data-testid="text-multiplier">{multiplier.toFixed(1)}x</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-6 rounded-xl bg-slate-100 dark:bg-slate-800 p-1 flex justify-between">
+            <Tabs defaultValue="spin" className="w-full">
+              <TabsList className="grid w-full grid-cols-4 p-1 bg-transparent">
+                <TabsTrigger value="spin" data-testid="tab-spin" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-primary data-[state=active]:shadow-sm">Spin</TabsTrigger>
+                <TabsTrigger value="scratch" data-testid="tab-scratch" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-primary data-[state=active]:shadow-sm">Scratch</TabsTrigger>
+                <TabsTrigger value="tasks" data-testid="tab-tasks" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-primary data-[state=active]:shadow-sm">Tasks</TabsTrigger>
+                <TabsTrigger value="boosts" data-testid="tab-boosts" className="data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-primary data-[state=active]:shadow-sm">Boosts</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="spin" className="mt-6">
+                <SpinWheel
+                  onSpin={handleSpin}
+                  canSpin={lastSpin?.canSpin ?? true}
+                  nextSpinTime={lastSpin?.nextSpinTime}
+                  energy={profile?.energy ?? 100}
+                />
+              </TabsContent>
+
+              <TabsContent value="scratch" className="mt-6">
+                <ScratchCardList
+                  cards={scratchCards}
+                  onScratchCard={handleScratchCard}
+                  onGetNewCard={handleGetNewCard}
+                  canGetNewCard={(profile?.energy ?? 0) >= 10}
+                />
+              </TabsContent>
+
+              <TabsContent value="tasks" className="mt-6">
+                <DailyTasks
+                  achievements={achievements}
+                  onClaimReward={handleClaimAchievement}
+                />
+              </TabsContent>
+
+              <TabsContent value="boosts" className="mt-6">
+                <BoostCard
+                  boosts={boosts}
+                  onActivateBoost={handleActivateBoost}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
-
-        <Tabs defaultValue="spin" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 p-1">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
-              <TabsTrigger value="spin" data-testid="tab-spin" className="w-full">Spin</TabsTrigger>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
-              <TabsTrigger value="scratch" data-testid="tab-scratch" className="w-full">Scratch</TabsTrigger>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
-              <TabsTrigger value="tasks" data-testid="tab-tasks" className="w-full">Tasks</TabsTrigger>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
-              <TabsTrigger value="boosts" data-testid="tab-boosts" className="w-full">Boosts</TabsTrigger>
-            </motion.div>
-          </TabsList>
-
-          <TabsContent value="spin" className="mt-4">
-            <motion.div variants={itemVariants}>
-              <SpinWheel
-                onSpin={handleSpin}
-                canSpin={lastSpin?.canSpin ?? true}
-                nextSpinTime={lastSpin?.nextSpinTime}
-                energy={profile?.energy ?? 100}
-              />
-            </motion.div>
-          </TabsContent>
-
-          <TabsContent value="scratch" className="mt-4">
-            <motion.div variants={itemVariants}>
-              <ScratchCardList
-                cards={scratchCards}
-                onScratchCard={handleScratchCard}
-                onGetNewCard={handleGetNewCard}
-                canGetNewCard={(profile?.energy ?? 0) >= 10}
-              />
-            </motion.div>
-          </TabsContent>
-
-          <TabsContent value="tasks" className="mt-4">
-            <motion.div variants={itemVariants}>
-              <DailyTasks
-                achievements={achievements}
-                onClaimReward={handleClaimAchievement}
-              />
-            </motion.div>
-          </TabsContent>
-
-          <TabsContent value="boosts" className="mt-4">
-            <motion.div variants={itemVariants}>
-              <BoostCard
-                boosts={boosts}
-                onActivateBoost={handleActivateBoost}
-              />
-            </motion.div>
-          </TabsContent>
-        </Tabs>
       </div>
 
       <CoinAnimation
@@ -329,6 +279,6 @@ export default function Games() {
         show={showCoinAnimation}
         onComplete={() => setShowCoinAnimation(false)}
       />
-    </motion.div>
+    </div>
   );
 }

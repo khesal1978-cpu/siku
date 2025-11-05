@@ -474,5 +474,18 @@
     animation: liquid-float-2 25s ease-in-out infinite;
   }
 
-  
+  @media (min-width: 768px) {
+    body {
+      background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+    }
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 30s linear infinite;
+  }
 }

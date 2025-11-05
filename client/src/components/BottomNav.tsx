@@ -12,6 +12,11 @@ const navItems = [
 
 export default function BottomNav() {
   const [location] = useLocation();
+  
+  const hiddenPaths = ['/settings', '/terms', '/help'];
+  const shouldHide = hiddenPaths.some(path => location.startsWith(path));
+
+  if (shouldHide) return null;
 
   return (
     <nav
@@ -36,6 +41,7 @@ export default function BottomNav() {
                 whileTap={{ scale: 0.9 }}
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                data-testid={`button-nav-${label.toLowerCase()}`}
               >
                 {isActive && (
                   <motion.div
