@@ -88,10 +88,11 @@ export default function Team() {
         <PageHeader title="My Team" subtitle="Build your network and earn together" />
 
         <div className="px-6 space-y-8">
-          <Card3D intensity="medium">
+          <Card3D intensity="low">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
               className="bg-gradient-to-br from-primary/90 to-primary p-6 rounded-xl shadow-xl shadow-primary/25 text-white"
             >
               <h2 className="text-lg font-semibold">Your Referral Code</h2>
@@ -121,22 +122,22 @@ export default function Team() {
           </Card3D>
 
           <div className="grid grid-cols-2 gap-4">
-            <Card3D intensity="high">
+            <Card3D intensity="medium">
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.05 }}
                 className="bg-primary/5 dark:bg-primary/10 p-4 rounded-lg flex flex-col items-center justify-center text-center"
               >
                 <p className="text-sm text-slate-500 dark:text-slate-400">Total Team</p>
                 <p className="text-4xl font-bold text-primary mt-1" data-testid="text-total-team">{totalReferrals}</p>
               </motion.div>
             </Card3D>
-            <Card3D intensity="high">
+            <Card3D intensity="medium">
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
                 className="bg-primary/5 dark:bg-primary/10 p-4 rounded-lg flex flex-col items-center justify-center text-center"
               >
                 <p className="text-sm text-slate-500 dark:text-slate-400">Team Earnings</p>
@@ -159,8 +160,9 @@ export default function Team() {
               {directReferrals.length === 0 ? (
                 <Card3D intensity="low">
                   <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
                     className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-sm text-center"
                   >
                     <Users className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
@@ -170,11 +172,11 @@ export default function Team() {
                 </Card3D>
               ) : (
                 directReferrals.map((referral, index) => (
-                  <Card3D key={referral.id} intensity="medium">
+                  <Card3D key={referral.id} intensity="low">
                     <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
                       className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-4"
                       data-testid={`card-referral-${index}`}
                     >
