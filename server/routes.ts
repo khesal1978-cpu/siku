@@ -131,8 +131,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      const rewards = [50, 100, 25, 200, 75, 500, 150, 1000];
-      const reward = rewards[Math.floor(Math.random() * rewards.length)];
+      const rewardOptions = [
+        { value: 0, weight: 20, label: 'Unlucky' },
+        { value: 30, weight: 30, label: '30' },
+        { value: 60, weight: 30, label: '60' },
+        { value: 100, weight: 12, label: '100' },
+        { value: 400, weight: 6, label: '400' },
+        { value: 1000, weight: 2, label: '1000' }
+      ];
+      
+      const totalWeight = rewardOptions.reduce((sum, opt) => sum + opt.weight, 0);
+      let random = Math.random() * totalWeight;
+      let reward = 0;
+      
+      for (const option of rewardOptions) {
+        random -= option.weight;
+        if (random <= 0) {
+          reward = option.value;
+          break;
+        }
+      }
 
       await storage.createSpinRecord({
         userId: req.params.userId,

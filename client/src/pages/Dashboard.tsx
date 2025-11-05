@@ -9,6 +9,7 @@ import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import type { UserProfile, MiningSession } from '@shared/schema';
 import { Skeleton } from '@/components/ui/skeleton';
+import Card3D from '@/components/Card3D';
 
 export default function Dashboard() {
   const { userId } = useAuth();
@@ -164,17 +165,19 @@ export default function Dashboard() {
           </div>
 
           <div className="md:col-span-2 lg:col-span-1 px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center p-6 bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-2xl shadow-lg border border-white/80 dark:border-slate-700"
-            >
-              <p className="text-base font-medium text-slate-500 dark:text-slate-400">Mining Balance</p>
-              <div className="flex items-baseline justify-center gap-2 mt-2">
-                <h2 className="text-5xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-balance">{profile.balance.toLocaleString()}</h2>
-                <span className="text-xl font-semibold text-slate-600 dark:text-slate-400">CASET</span>
-              </div>
-            </motion.div>
+            <Card3D intensity="high">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center p-6 bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-2xl shadow-xl border border-white/80 dark:border-slate-700"
+              >
+                <p className="text-base font-medium text-slate-500 dark:text-slate-400">Mining Balance</p>
+                <div className="flex items-baseline justify-center gap-2 mt-2">
+                  <h2 className="text-5xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-balance">{profile.balance.toLocaleString()}</h2>
+                  <span className="text-xl font-semibold text-slate-600 dark:text-slate-400">CASET</span>
+                </div>
+              </motion.div>
+            </Card3D>
           </div>
 
           <div className="md:col-span-2 lg:col-span-1 flex flex-col items-center px-6">
@@ -219,35 +222,41 @@ export default function Dashboard() {
           </div>
 
           <div className="md:col-span-2 px-6 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 rounded-2xl flex flex-col items-start gap-3 shadow-md border border-white/80 dark:border-slate-700">
-              <div className="bg-primary/10 p-2.5 rounded-lg border border-primary/10">
-                <Zap className="text-primary w-6 h-6" />
+            <Card3D intensity="medium">
+              <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 rounded-2xl flex flex-col items-start gap-3 shadow-xl border border-white/80 dark:border-slate-700">
+                <div className="bg-primary/10 p-2.5 rounded-lg border border-primary/10">
+                  <Zap className="text-primary w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Mining Speed</p>
+                  <p className="text-xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-mining-speed">{miningSpeed.toFixed(1)}/hr</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Mining Speed</p>
-                <p className="text-xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-mining-speed">{miningSpeed.toFixed(1)}/hr</p>
-              </div>
-            </div>
+            </Card3D>
 
-            <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 rounded-2xl flex flex-col items-start gap-3 shadow-md border border-white/80 dark:border-slate-700">
-              <div className="bg-primary/10 p-2.5 rounded-lg border border-primary/10">
-                <TrendingUp className="text-primary w-6 h-6" />
+            <Card3D intensity="medium">
+              <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 rounded-2xl flex flex-col items-start gap-3 shadow-xl border border-white/80 dark:border-slate-700">
+                <div className="bg-primary/10 p-2.5 rounded-lg border border-primary/10">
+                  <TrendingUp className="text-primary w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Total Mined</p>
+                  <p className="text-xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-total-mined">{profile.totalMined.toLocaleString()}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Total Mined</p>
-                <p className="text-xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-total-mined">{profile.totalMined.toLocaleString()}</p>
-              </div>
-            </div>
+            </Card3D>
 
-            <div className="md:col-span-2 lg:col-span-1 bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 rounded-2xl flex items-center gap-4 shadow-md border border-white/80 dark:border-slate-700">
-              <div className="bg-primary/10 p-3 rounded-lg border border-primary/10">
-                <Clock className="text-primary w-8 h-8" />
+            <Card3D intensity="medium" className="md:col-span-2 lg:col-span-1">
+              <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 rounded-2xl flex items-center gap-4 shadow-xl border border-white/80 dark:border-slate-700">
+                <div className="bg-primary/10 p-3 rounded-lg border border-primary/10">
+                  <Clock className="text-primary w-8 h-8" />
+                </div>
+                <div>
+                  <p className="text-base text-slate-500 dark:text-slate-400">Next Mining Cycle</p>
+                  <p className="text-2xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-time-remaining">{isMining ? timeRemaining : "Ready to start"}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-base text-slate-500 dark:text-slate-400">Next Mining Cycle</p>
-                <p className="text-2xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-time-remaining">{isMining ? timeRemaining : "Ready to start"}</p>
-              </div>
-            </div>
+            </Card3D>
           </div>
         </div>
       </div>

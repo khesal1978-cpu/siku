@@ -8,6 +8,8 @@ import { useQuery } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 import type { UserProfile, Transaction } from '@shared/schema';
 import { formatDistanceToNow } from 'date-fns';
+import Card3D from '@/components/Card3D';
+import { motion } from 'framer-motion';
 
 export default function Wallet() {
   const { userId } = useAuth();
@@ -65,47 +67,54 @@ export default function Wallet() {
         <PageHeader title="Wallet" subtitle="Track your earnings and transactions" />
 
         <div className="px-6 space-y-8">
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg shadow-primary/10 p-6 relative overflow-hidden">
-            <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full"></div>
-            <div className="absolute -bottom-16 -left-8 w-40 h-40 bg-primary/10 rounded-full"></div>
-            
-            <div className="relative z-10 text-center">
-              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-2">Available Balance</p>
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center">
-                  <span className="text-lg">💰</span>
-                </div>
-                <p className="text-4xl font-bold tracking-tight text-slate-800 dark:text-slate-100" data-testid="text-wallet-balance">
-                  {(profile?.balance || 0).toLocaleString()}
-                </p>
+          <Card3D intensity="high">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl shadow-primary/10 p-6 relative overflow-hidden">
+              <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full"></div>
+              <div className="absolute -bottom-16 -left-8 w-40 h-40 bg-primary/10 rounded-full"></div>
+              
+              <div className="relative z-10 text-center">
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-2">Available Balance</p>
+                <motion.div 
+                  className="flex items-center justify-center gap-2"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-lg">💰</span>
+                  </div>
+                  <p className="text-4xl font-bold tracking-tight text-slate-800 dark:text-slate-100" data-testid="text-wallet-balance">
+                    {(profile?.balance || 0).toLocaleString()}
+                  </p>
+                </motion.div>
+                <p className="text-lg font-medium text-slate-600 dark:text-slate-400 mt-1">CASET</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Pending: 0 CASET</p>
               </div>
-              <p className="text-lg font-medium text-slate-600 dark:text-slate-400 mt-1">CASET</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Pending: 0 CASET</p>
-            </div>
 
-            <div className="relative z-10 grid grid-cols-2 gap-4 mt-6">
-              <button
-                disabled
-                className="flex flex-col items-center justify-center gap-2 py-3 px-4 bg-gray-100 dark:bg-slate-700 rounded-lg text-slate-500 dark:text-slate-400 font-semibold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
-                data-testid="button-withdraw"
-              >
-                <div className="w-10 h-10 flex items-center justify-center bg-gray-200 dark:bg-slate-600 rounded-full">
-                  <ArrowDownToLine className="w-5 h-5" />
-                </div>
-                Withdraw
-              </button>
-              <button
-                disabled
-                className="flex flex-col items-center justify-center gap-2 py-3 px-4 bg-primary text-white rounded-lg font-semibold shadow-md shadow-primary/30 hover:bg-teal-500 transition-colors disabled:opacity-50"
-                data-testid="button-send"
-              >
-                <div className="w-10 h-10 flex items-center justify-center bg-white/20 rounded-full">
-                  <ArrowUpRight className="w-5 h-5" style={{ transform: 'rotate(-45deg)' }} />
-                </div>
-                Send
-              </button>
+              <div className="relative z-10 grid grid-cols-2 gap-4 mt-6">
+                <button
+                  disabled
+                  className="flex flex-col items-center justify-center gap-2 py-3 px-4 bg-gray-100 dark:bg-slate-700 rounded-lg text-slate-500 dark:text-slate-400 font-semibold hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
+                  data-testid="button-withdraw"
+                >
+                  <div className="w-10 h-10 flex items-center justify-center bg-gray-200 dark:bg-slate-600 rounded-full">
+                    <ArrowDownToLine className="w-5 h-5" />
+                  </div>
+                  Withdraw
+                </button>
+                <button
+                  disabled
+                  className="flex flex-col items-center justify-center gap-2 py-3 px-4 bg-primary text-white rounded-lg font-semibold shadow-md shadow-primary/30 hover:bg-teal-500 transition-colors disabled:opacity-50"
+                  data-testid="button-send"
+                >
+                  <div className="w-10 h-10 flex items-center justify-center bg-white/20 rounded-full">
+                    <ArrowUpRight className="w-5 h-5" style={{ transform: 'rotate(-45deg)' }} />
+                  </div>
+                  Send
+                </button>
+              </div>
             </div>
-          </div>
+          </Card3D>
 
           <div>
             <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">Transaction History</h2>

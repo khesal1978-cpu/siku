@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Ticket, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import Card3D from './Card3D';
 
 interface ScratchCardProps {
   reward: number;
@@ -79,6 +80,13 @@ export default function ScratchCard({ reward, onScratch, cardId }: ScratchCardPr
       setIsScratched(true);
       onScratch().then(() => {
         setShowReward(true);
+        const canvas = canvasRef.current;
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        }
       }).catch(() => {
         setIsScratched(false);
       });
@@ -86,7 +94,8 @@ export default function ScratchCard({ reward, onScratch, cardId }: ScratchCardPr
   };
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950 dark:to-green-950 border-emerald-200 dark:border-emerald-800" data-testid={`card-scratch-${cardId}`}>
+    <Card3D intensity="medium">
+      <Card className="p-6 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950 dark:to-green-950 border-emerald-200 dark:border-emerald-800 shadow-xl" data-testid={`card-scratch-${cardId}`}>
       <div className="text-center mb-4">
         <div className="flex items-center justify-center gap-2 mb-2">
           <Ticket className="w-6 h-6 text-emerald-600" />
@@ -109,7 +118,7 @@ export default function ScratchCard({ reward, onScratch, cardId }: ScratchCardPr
           </div>
         </div>
 
-        <canvas
+        <motion.canvas
           ref={canvasRef}
           width={300}
           height={200}
@@ -121,6 +130,8 @@ export default function ScratchCard({ reward, onScratch, cardId }: ScratchCardPr
           onTouchEnd={() => setIsScratching(false)}
           onTouchMove={scratch}
           data-testid={`canvas-scratch-${cardId}`}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         />
 
         <div className="mt-2">
@@ -156,7 +167,8 @@ export default function ScratchCard({ reward, onScratch, cardId }: ScratchCardPr
           </motion.div>
         )}
       </AnimatePresence>
-    </Card>
+      </Card>
+    </Card3D>
   );
 }
 
