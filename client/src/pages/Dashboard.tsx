@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Zap, TrendingUp, Clock } from 'lucide-react';
+import { Zap, TrendingUp, Clock, Battery, Award, Users } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
@@ -164,7 +164,7 @@ export default function Dashboard() {
             <PageHeader title="Mining Dashboard" subtitle="Keep mining to earn more rewards" />
           </div>
 
-          <div className="md:col-span-2 lg:col-span-1 px-6">
+          <div className="md:col-span-2 lg:col-span-1 px-6 space-y-4">
             <Card3D intensity="high">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -178,12 +178,95 @@ export default function Dashboard() {
                 </div>
               </motion.div>
             </Card3D>
+            
+            {/* Energy indicator */}
+            <Card3D intensity="medium">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="p-4 bg-white/70 dark:bg-slate-800/70 backdrop-blur-md rounded-2xl shadow-xl border border-white/80 dark:border-slate-700"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Battery className="w-5 h-5 text-primary" />
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">Energy</span>
+                  </div>
+                  <span className="font-bold text-primary">{profile.energy}/{profile.maxEnergy}</span>
+                </div>
+                <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(profile.energy / profile.maxEnergy) * 100}%` }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Refills 1 energy every 5 minutes</p>
+              </motion.div>
+            </Card3D>
           </div>
 
           <div className="md:col-span-2 lg:col-span-1 flex flex-col items-center px-6">
-            <div className="relative w-56 h-56 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full bg-white/70 dark:bg-slate-800/70 shadow-inner border border-white/80 dark:border-slate-700"></div>
-              <svg className="w-full h-full transform -rotate-90 p-3" viewBox="0 0 100 100">
+            <div className="relative w-72 h-72 flex items-center justify-center">
+              {/* Animated glow rings */}
+              <motion.div 
+                className="absolute inset-0 rounded-full bg-primary/5"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.6, 0.3],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+              <motion.div 
+                className="absolute inset-0 rounded-full bg-primary/5"
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.2, 0.4, 0.2],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.5
+                }}
+              />
+              
+              {/* Floating sparkles */}
+              {[...Array(8)].map((_, i) => {
+                const angle = (i * 360) / 8;
+                const radius = 120;
+                const x = Math.cos(angle * Math.PI / 180) * radius;
+                const y = Math.sin(angle * Math.PI / 180) * radius;
+                return (
+                  <motion.div
+                    key={i}
+                    className="absolute w-2 h-2 bg-primary rounded-full"
+                    style={{
+                      left: `calc(50% + ${x}px)`,
+                      top: `calc(50% + ${y}px)`,
+                    }}
+                    animate={{
+                      scale: [0, 1, 0],
+                      opacity: [0, 1, 0],
+                      rotate: [0, 180, 360],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: i * 0.25,
+                      ease: "easeInOut"
+                    }}
+                  />
+                );
+              })}
+              
+              <div className="absolute inset-8 rounded-full bg-white/70 dark:bg-slate-800/70 shadow-inner border border-white/80 dark:border-slate-700"></div>
+              <svg className="w-full h-full transform -rotate-90 p-8" viewBox="0 0 100 100">
                 <circle className="text-slate-200 dark:text-slate-700" cx="50" cy="50" fill="transparent" r="45" stroke="currentColor" strokeWidth="10"></circle>
                 <circle 
                   className="text-primary drop-shadow-lg" 
@@ -199,25 +282,96 @@ export default function Dashboard() {
                   style={{ transition: 'stroke-dashoffset 0.3s ease' }}
                 ></circle>
               </svg>
-              <button 
+              
+              <motion.button 
                 onClick={handleMine}
                 disabled={startMiningMutation.isPending || claimMiningMutation.isPending || (isMining && progress < 100)}
-                className="absolute w-40 h-40 rounded-full bg-gradient-to-br from-primary to-emerald-400 shadow-2xl shadow-primary/40 flex flex-col items-center justify-center text-center transition-transform active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="absolute w-44 h-44 rounded-full bg-gradient-to-br from-primary to-emerald-400 shadow-2xl flex flex-col items-center justify-center text-center disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
                 data-testid="button-mine"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                animate={{
+                  boxShadow: isMining 
+                    ? [
+                        "0 0 30px rgba(16, 185, 129, 0.4)",
+                        "0 0 60px rgba(16, 185, 129, 0.6)",
+                        "0 0 30px rgba(16, 185, 129, 0.4)",
+                      ]
+                    : "0 0 30px rgba(16, 185, 129, 0.3)",
+                }}
+                transition={{
+                  boxShadow: {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }
+                }}
               >
-                <Zap className="text-white w-12 h-12 drop-shadow-md" fill="white" />
-                <p className="text-3xl font-bold text-white drop-shadow-md">{Math.round(progress)}%</p>
-              </button>
+                {/* Shine effect */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  animate={{
+                    x: ['-100%', '200%'],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    repeatDelay: 1
+                  }}
+                />
+                
+                <motion.div
+                  animate={isMining ? {
+                    rotate: 360,
+                    scale: [1, 1.1, 1],
+                  } : {}}
+                  transition={{
+                    rotate: { duration: 2, repeat: Infinity, ease: "linear" },
+                    scale: { duration: 1, repeat: Infinity, ease: "easeInOut" }
+                  }}
+                >
+                  <Zap className="text-white w-14 h-14 drop-shadow-md" fill="white" />
+                </motion.div>
+                <motion.p 
+                  className="text-3xl font-bold text-white drop-shadow-md mt-2"
+                  animate={progress === 100 ? {
+                    scale: [1, 1.2, 1],
+                  } : {}}
+                  transition={{
+                    duration: 0.5,
+                    repeat: progress === 100 ? Infinity : 0,
+                  }}
+                >
+                  {Math.round(progress)}%
+                </motion.p>
+              </motion.button>
             </div>
             
             {isMining && (
-              <div className="mt-8 flex items-center justify-center gap-2 z-10 px-6 py-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full border border-primary/20 shadow-md">
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-8 flex items-center justify-center gap-2 z-10 px-6 py-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full border border-primary/20 shadow-md"
+              >
                 <span className="relative flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-700 dark:bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-700 dark:bg-emerald-400"></span>
                 </span>
                 <p className="font-semibold text-emerald-700 dark:text-emerald-300">Mining Active</p>
-              </div>
+              </motion.div>
+            )}
+            
+            {progress === 100 && (
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                className="mt-4 px-8 py-4 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-2xl shadow-lg"
+              >
+                <p className="text-white font-bold text-xl flex items-center gap-2">
+                  ✨ Ready to Claim! ✨
+                </p>
+              </motion.div>
             )}
           </div>
 
@@ -256,6 +410,49 @@ export default function Dashboard() {
                   <p className="text-2xl font-bold text-slate-800 dark:text-slate-100" data-testid="text-time-remaining">{isMining ? timeRemaining : "Ready to start"}</p>
                 </div>
               </div>
+            </Card3D>
+          </div>
+          
+          {/* Quick tips and stats section */}
+          <div className="md:col-span-2 px-6 mt-8 grid md:grid-cols-2 gap-6">
+            <Card3D intensity="low">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-6 rounded-2xl border border-blue-200 dark:border-blue-800 shadow-lg"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
+                    <Award className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Daily Streak</h3>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-4xl font-bold text-blue-600 dark:text-blue-400">{profile.streak}</p>
+                  <span className="text-slate-600 dark:text-slate-400">days</span>
+                </div>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Keep mining daily to maintain your streak! 🔥</p>
+              </motion.div>
+            </Card3D>
+            
+            <Card3D intensity="low">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+                className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 p-6 rounded-2xl border border-purple-200 dark:border-purple-800 shadow-lg"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
+                    <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Pro Tip</h3>
+                </div>
+                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                  💡 Invite friends to earn bonus coins! Each referral gives you extra mining speed and rewards.
+                </p>
+              </motion.div>
             </Card3D>
           </div>
         </div>
