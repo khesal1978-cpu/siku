@@ -20,7 +20,7 @@ export const userProfiles = pgTable("user_profiles", {
   maxEnergy: integer("max_energy").notNull().default(100),
   streak: integer("streak").notNull().default(0),
   lastLogin: timestamp("last_login").notNull().default(sql`now()`),
-  miningSpeed: real("mining_speed").notNull().default(10),
+  miningSpeed: real("mining_speed").notNull().default(2),
   miningMultiplier: real("mining_multiplier").notNull().default(1),
   lastEnergyRefill: timestamp("last_energy_refill").notNull().default(sql`now()`),
   totalMined: real("total_mined").notNull().default(0),

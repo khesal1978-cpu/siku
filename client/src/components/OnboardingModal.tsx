@@ -13,13 +13,13 @@ interface OnboardingStep {
 const steps: OnboardingStep[] = [
   {
     title: 'Welcome to PingCaset!',
-    description: 'Start mining Caset coins every 6 hours. Earn 10 coins per hour with our automated mining system.',
+    description: 'Start mining Caset coins every 6 hours. Earn 2 coins per hour with our automated mining system.',
     highlight: 'Tap the mining button to start'
   },
   {
     title: 'Invite & Earn More',
-    description: 'Invite friends to boost your earnings! You get 500 coins and your friend gets 900 coins instantly.',
-    highlight: '1.8x multiplier on referrals'
+    description: 'Invite friends to boost your earnings! You get 200 coins and your friend gets 400 coins instantly.',
+    highlight: '1.4x multiplier per referral'
   },
   {
     title: 'Track Your Progress',

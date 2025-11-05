@@ -17,6 +17,7 @@ export default function Dashboard() {
   const { toast } = useToast();
   const [progress, setProgress] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState('');
+  const [currentEarnings, setCurrentEarnings] = useState(0);
 
   const { data: profile, isLoading: profileLoading } = useQuery<UserProfile>({
     queryKey: ['/api/profile', userId],
@@ -103,6 +104,10 @@ export default function Dashboard() {
       const totalDuration = endsAt.getTime() - startedAt.getTime();
       const elapsed = now.getTime() - startedAt.getTime();
       const remaining = endsAt.getTime() - now.getTime();
+
+      const hoursElapsed = elapsed / (1000 * 60 * 60);
+      const coinsEarned = hoursElapsed * miningSession.coinsPerHour;
+      setCurrentEarnings(coinsEarned);
 
       if (remaining <= 0) {
         setProgress(100);
@@ -364,13 +369,23 @@ export default function Dashboard() {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-8 flex items-center justify-center gap-2 z-10 px-6 py-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full border border-primary/20 shadow-md"
+                className="mt-8 flex flex-col items-center justify-center gap-3 z-10"
               >
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-700 dark:bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-700 dark:bg-emerald-400"></span>
-                </span>
-                <p className="font-semibold text-emerald-700 dark:text-emerald-300">Mining Active</p>
+                <div className="flex items-center justify-center gap-2 px-6 py-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full border border-primary/20 shadow-md">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-700 dark:bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-700 dark:bg-emerald-400"></span>
+                  </span>
+                  <p className="font-semibold text-emerald-700 dark:text-emerald-300">Mining Active</p>
+                </div>
+                <motion.div
+                  className="px-6 py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-lg border border-primary/30 shadow-sm"
+                  animate={{ scale: [1, 1.02, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Current Earnings</p>
+                  <p className="text-2xl font-bold text-primary" data-testid="text-current-earnings">+{currentEarnings.toFixed(2)} CASET</p>
+                </motion.div>
               </motion.div>
             )}
 

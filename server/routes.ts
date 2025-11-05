@@ -16,7 +16,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           maxEnergy: 100,
           streak: 0,
           lastLogin: new Date(),
-          miningSpeed: 10,
+          miningSpeed: 2,
           miningMultiplier: 1,
           lastEnergyRefill: new Date(),
           totalMined: 0
@@ -28,7 +28,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             achievementKey: 'daily_login',
             title: 'Daily Login',
             description: 'Log in to the app daily',
-            reward: 100,
+            reward: 5,
             isCompleted: false,
             progress: 0,
             target: 1
@@ -38,7 +38,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             achievementKey: 'mine_coins',
             title: 'Mine 1000 Coins',
             description: 'Mine a total of 1000 CASET coins',
-            reward: 500,
+            reward: 100,
             isCompleted: false,
             progress: 0,
             target: 1000
@@ -48,7 +48,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             achievementKey: 'invite_friends',
             title: 'Invite 5 Friends',
             description: 'Invite 5 friends to join PingCaset',
-            reward: 1000,
+            reward: 100,
             isCompleted: false,
             progress: 0,
             target: 5
@@ -58,7 +58,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             achievementKey: 'play_games',
             title: 'Play 10 Games',
             description: 'Play mini-games 10 times',
-            reward: 250,
+            reward: 50,
             isCompleted: false,
             progress: 0,
             target: 10
@@ -480,6 +480,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(referral);
     } catch (error) {
       res.status(500).json({ error: 'Failed to create referral' });
+    }
+  });
+
+  app.post('/api/referrals/use/:userId', async (req, res) => {
+    try {
+      const { referralCode } = req.body;
+      
+      const existingReferral = await storage.getReferralByCode(referralCode);
+      if (!existingReferral) {
+        return res.status(404).json({ error: 'Invalid referral code' });
+      }
+
+      const referrerProfile = await storage.getUserProfile(existingReferral.referrerId);
+      const referredProfile = await storage.getUserProfile(req.params.userId);
+
+      if (!referrerProfile || !referredProfile) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const referrals = await storage.getReferrals(existingReferral.referrerId);
+      const newMultiplier = 1 + (referrals.length * 0.4);
+
+      const updatedReferrerProfile = await storage.updateUserProfile(existingReferral.referrerId, {
+        balance: referrerProfile.balance + 200,
+        miningMultiplier: newMultiplier
+      });
+
+      const updatedReferredProfile = await storage.updateUserProfile(req.params.userId, {
+        balance: referredProfile.balance + 400
+      });
+
+      await storage.createReferral({
+        referrerId: existingReferral.referrerId,
+        referredId: req.params.userId,
+        referralCode,
+        rewardClaimed: true
+      });
+
+      await storage.createTransaction({
+        userId: existingReferral.referrerId,
+        amount: 200,
+        type: 'referral',
+        description: 'Referral bonus - inviter reward'
+      });
+
+      await storage.createTransaction({
+        userId: req.params.userId,
+        amount: 400,
+        type: 'referral',
+        description: 'Referral bonus - welcome reward'
+      });
+
+      const inviteFriendsAchievement = (await storage.getAchievements(existingReferral.referrerId))
+        .find(a => a.achievementKey === 'invite_friends');
+      
+      if (inviteFriendsAchievement && !inviteFriendsAchievement.isCompleted) {
+        await storage.updateAchievement(inviteFriendsAchievement.id, {
+          progress: inviteFriendsAchievement.progress + 1
+        });
+      }
+
+      wsManager.broadcast(existingReferral.referrerId, 'profile_updated', updatedReferrerProfile);
+      wsManager.broadcast(req.params.userId, 'profile_updated', updatedReferredProfile);
+
+      res.json({ 
+        referrer: updatedReferrerProfile, 
+        referred: updatedReferredProfile 
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to use referral code' });
     }
   });
 
