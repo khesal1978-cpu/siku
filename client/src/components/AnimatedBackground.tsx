@@ -13,7 +13,7 @@ export default function AnimatedBackground() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Optimized particle system for 120fps
+    // Optimized particle system for 60fps
     const particles: Array<{
       x: number;
       y: number;
@@ -41,22 +41,22 @@ export default function AnimatedBackground() {
     }
 
     let lastTime = 0;
-    const targetFPS = 120;
+    const targetFPS = 60; // Target 60 FPS
     const frameTime = 1000 / targetFPS;
 
     function animate(currentTime: number) {
       if (!ctx || !canvas) return;
-      
+
       const deltaTime = currentTime - lastTime;
-      
+
       // Throttle to maintain consistent frame rate
       if (deltaTime < frameTime) {
         requestAnimationFrame(animate);
         return;
       }
-      
+
       lastTime = currentTime - (deltaTime % frameTime);
-      
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach(particle => {
@@ -76,7 +76,7 @@ export default function AnimatedBackground() {
           particle.x, particle.y, 0,
           particle.x, particle.y, particle.radius
         );
-        
+
         gradient.addColorStop(0, `rgba(16, 185, 129, ${particle.opacity * 0.8})`);
         gradient.addColorStop(0.5, `rgba(16, 185, 129, ${particle.opacity * 0.3})`);
         gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
@@ -115,17 +115,14 @@ export default function AnimatedBackground() {
           willChange: 'transform'
         }}
       />
-      
-      {/* Liquid blobs - CSS animated for 120fps */}
+
+      {/* Liquid blobs - CSS animated for 60fps */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="liquid-blob liquid-blob-1" />
         <div className="liquid-blob liquid-blob-2" />
-        <div className="liquid-blob liquid-blob-3" />
-        <div className="liquid-blob liquid-blob-4" />
-        <div className="liquid-blob liquid-blob-5" />
       </div>
 
-      {/* SVG liquid effect */}
+      {/* SVG liquid effect - simplified for performance */}
       <svg className="fixed inset-0 pointer-events-none z-0" style={{ opacity: 0.4 }}>
         <defs>
           <filter id="goo">
@@ -137,8 +134,6 @@ export default function AnimatedBackground() {
         <g filter="url(#goo)">
           <circle className="liquid-circle liquid-circle-1" r="80" fill="rgba(16, 185, 129, 0.3)" />
           <circle className="liquid-circle liquid-circle-2" r="100" fill="rgba(16, 185, 129, 0.25)" />
-          <circle className="liquid-circle liquid-circle-3" r="90" fill="rgba(16, 185, 129, 0.28)" />
-          <circle className="liquid-circle liquid-circle-4" r="70" fill="rgba(16, 185, 129, 0.32)" />
         </g>
       </svg>
     </>
