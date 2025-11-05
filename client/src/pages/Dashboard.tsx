@@ -105,7 +105,8 @@ export default function Dashboard() {
       const elapsed = now.getTime() - startedAt.getTime();
       const remaining = endsAt.getTime() - now.getTime();
 
-      const hoursElapsed = elapsed / (1000 * 60 * 60);
+      const cappedElapsed = Math.min(elapsed, totalDuration);
+      const hoursElapsed = cappedElapsed / (1000 * 60 * 60);
       const coinsEarned = hoursElapsed * miningSession.coinsPerHour;
       setCurrentEarnings(coinsEarned);
 

@@ -41,3 +41,7 @@
 [x] 41. Verified all WebSocket broadcasts working for realtime updates across all features
 [x] 42. Application fully tested with 3D animations working on mobile and desktop
 [x] 43. Resolved Git merge conflicts in Card3D.tsx, Games.tsx, and Team.tsx
+[x] 44. Updated mining speed to 2 per hour and achievement rewards
+[x] 45. Implemented referral system with 200 coins for inviter, 400 for invited, 1.4x multiplier per invite
+[x] 46. Added real-time mining earnings display with proper capping to session duration
+[x] 47. Updated UI text in OnboardingModal and Team page to reflect new values
