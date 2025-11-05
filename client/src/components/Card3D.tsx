@@ -56,12 +56,34 @@ export default function Card3D({ children, className = '', intensity = 'medium' 
   return (
     <div style={{ perspective: isMobile ? 'none' : '1200px' }} className={className}>
       <motion.div
+<<<<<<< HEAD
         ref={cardRef}
         initial={{ opacity: 0, y: 20 }}
         animate={{ 
           opacity: 1, 
           y: 0,
           scale: isHovered && !isMobile ? config.scale : isPressed ? 0.98 : 1,
+=======
+        initial={{ opacity: 0, y: 20, rotateX: -10 }}
+        animate={{ opacity: 1, y: 0, rotateX: 0 }}
+        whileHover={{
+          scale: config.scale,
+          rotateX: config.rotateX,
+          rotateY: config.rotateY,
+          z: config.z,
+        }}
+        whileTap={{
+          scale: config.scale,
+          rotateX: config.rotateX,
+          rotateY: config.rotateY,
+          z: config.z,
+        }}
+        transition={{
+          duration: 0.3,
+          type: 'spring',
+          stiffness: 300,
+          damping: 20,
+>>>>>>> b2bd29d5c92221f983b7da48ff89c1519981b7c8
         }}
         style={{
           rotateX: !isMobile ? rotateX : 0,
