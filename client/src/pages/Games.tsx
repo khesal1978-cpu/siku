@@ -8,6 +8,7 @@ import DailyTasks from '@/components/DailyTasks';
 import BoostCard from '@/components/BoostCard';
 import CoinAnimation from '@/components/CoinAnimation';
 import PageHeader from '@/components/PageHeader';
+import Card3D from '@/components/Card3D';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -183,49 +184,65 @@ export default function Games() {
 
         <div className="px-6 space-y-6">
           <div className="grid md:grid-cols-2 gap-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 shadow-md"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Zap className="w-6 h-6 text-green-500" fill="currentColor" />
-                  <span className="font-semibold text-slate-700 dark:text-slate-200">Energy</span>
+            <Card3D intensity="medium">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-2xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md p-4 shadow-md"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Zap className="w-6 h-6 text-green-500" fill="currentColor" />
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">Energy</span>
+                  </div>
+                  <span className="font-bold text-green-500" data-testid="text-energy">{profile?.energy ?? 100}/{profile?.maxEnergy ?? 100}</span>
                 </div>
-                <span className="font-bold text-green-500" data-testid="text-energy">{profile?.energy ?? 100}/{profile?.maxEnergy ?? 100}</span>
-              </div>
-              <div className="mt-3 h-3.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 p-0.5">
-                <div 
-                  className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.5)] transition-all"
-                  style={{ width: `${((profile?.energy ?? 100) / (profile?.maxEnergy ?? 100)) * 100}%` }}
-                ></div>
-              </div>
-              <p className="mt-2 text-center text-xs font-medium text-green-600">
-                {(profile?.energy ?? 100) === (profile?.maxEnergy ?? 100) ? 'Fully Charged!' : 'Recharging...'}
-              </p>
-            </motion.div>
+                <div className="mt-3 h-3.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 p-0.5">
+                  <div 
+                    className="h-full rounded-full bg-gradient-to-r from-green-400 to-emerald-500 shadow-[0_0_8px_rgba(34,197,94,0.5)] transition-all"
+                    style={{ width: `${((profile?.energy ?? 100) / (profile?.maxEnergy ?? 100)) * 100}%` }}
+                  ></div>
+                </div>
+                <p className="mt-2 text-center text-xs font-medium text-green-600">
+                  {(profile?.energy ?? 100) === (profile?.maxEnergy ?? 100) ? 'Fully Charged!' : 'Recharging...'}
+                </p>
+              </motion.div>
+            </Card3D>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 p-4 text-white shadow-lg shadow-teal-500/30">
-                <div className="flex items-center gap-2">
-                  <GiftIcon className="w-5 h-5 opacity-80" />
-                  <p className="text-sm font-medium">Login Streak</p>
-                </div>
-                <div className="mt-1 flex items-baseline gap-1.5">
-                  <span className="text-4xl font-bold" data-testid="text-streak">{profile?.streak ?? 0}</span>
-                  <span className="text-lg font-semibold">Days</span>
-                </div>
-              </div>
-              <div className="rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-4 text-white shadow-lg shadow-amber-500/30">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 opacity-80" />
-                  <p className="text-sm font-medium">Multiplier</p>
-                </div>
-                <div className="mt-1 flex items-baseline gap-1">
-                  <span className="text-4xl font-bold" data-testid="text-multiplier">{multiplier.toFixed(1)}x</span>
-                </div>
-              </div>
+              <Card3D intensity="high">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-500 p-4 text-white shadow-lg shadow-teal-500/30"
+                >
+                  <div className="flex items-center gap-2">
+                    <GiftIcon className="w-5 h-5 opacity-80" />
+                    <p className="text-sm font-medium">Login Streak</p>
+                  </div>
+                  <div className="mt-1 flex items-baseline gap-1.5">
+                    <span className="text-4xl font-bold" data-testid="text-streak">{profile?.streak ?? 0}</span>
+                    <span className="text-lg font-semibold">Days</span>
+                  </div>
+                </motion.div>
+              </Card3D>
+              <Card3D intensity="high">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-4 text-white shadow-lg shadow-amber-500/30"
+                >
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 opacity-80" />
+                    <p className="text-sm font-medium">Multiplier</p>
+                  </div>
+                  <div className="mt-1 flex items-baseline gap-1">
+                    <span className="text-4xl font-bold" data-testid="text-multiplier">{multiplier.toFixed(1)}x</span>
+                  </div>
+                </motion.div>
+              </Card3D>
             </div>
           </div>
 
