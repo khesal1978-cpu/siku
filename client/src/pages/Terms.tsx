@@ -8,7 +8,7 @@ export default function Terms() {
 
       <div className="relative z-10 max-w-3xl mx-auto">
         <header className="sticky top-0 z-20 flex items-center bg-[#f6f8f7]/80 dark:bg-[#10221a]/80 p-4 pb-2 backdrop-blur-sm">
-          <Link href="/settings" data-testid="link-back">
+          <Link href="/profile" data-testid="link-back">
             <button className="flex items-center justify-center w-12 h-12 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors" data-testid="button-back">
               <ArrowLeft className="w-6 h-6 text-[#111815] dark:text-[#e0e2e1]" />
             </button>

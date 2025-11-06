@@ -58,7 +58,7 @@ export default function HelpCenter() {
     <div className="h-screen bg-[#f6f8f7] dark:bg-[#10221a] flex flex-col max-w-md mx-auto">
       <header className="sticky top-0 z-10 shrink-0 bg-[#f6f8f7]/80 dark:bg-[#10221a]/80 backdrop-blur-md border-b border-[#e0e2e1]/80 dark:border-[#2c3e35]/50">
         <div className="flex items-center justify-between p-4 pb-3">
-          <Link href="/settings" data-testid="link-back">
+          <Link href="/profile" data-testid="link-back">
             <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors" data-testid="button-back">
               <ArrowLeft className="w-6 h-6 text-[#111815] dark:text-[#e0e2e1]" />
             </button>

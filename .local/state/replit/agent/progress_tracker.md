@@ -62,3 +62,6 @@
 [x] 62. Removed Settings icon from PageHeader component
 [x] 63. Cleaned up Settings references from BottomNav hiddenPaths
 [x] 64. Verified application is running successfully with all changes applied
+[x] 65. Fixed back button in Terms page to navigate to /profile instead of /settings
+[x] 66. Fixed back button in Help Center page to navigate to /profile instead of /settings
+[x] 67. Verified navigation from Terms/Help Center to Profile works without 404 error
