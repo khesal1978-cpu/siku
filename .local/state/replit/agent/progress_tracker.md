@@ -47,3 +47,4 @@
 [x] 47. Updated UI text in OnboardingModal and Team page to reflect new values
 [x] 48. Fixed workflow configuration after environment restart - configured with webview output type
 [x] 49. Verified application is running successfully on port 5000 with Express server and background jobs
+[x] 50. Changed mining cycle duration from 6 hours to 1 minute for testing purposes

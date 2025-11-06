@@ -390,7 +390,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const now = new Date();
-      const endsAt = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+      const endsAt = new Date(now.getTime() + 1 * 60 * 1000);
       
       const session = await storage.createMiningSession({
         userId: req.params.userId,
@@ -415,7 +415,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const now = new Date();
       const startedAt = new Date(session.startedAt);
-      const hoursElapsed = Math.min(6, (now.getTime() - startedAt.getTime()) / (1000 * 60 * 60));
+      const hoursElapsed = Math.min(1/60, (now.getTime() - startedAt.getTime()) / (1000 * 60 * 60));
       const coinsEarned = hoursElapsed * session.coinsPerHour;
 
       const profile = await storage.getUserProfile(req.params.userId);
