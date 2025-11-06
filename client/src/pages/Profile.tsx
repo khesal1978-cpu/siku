@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MapPin, Calendar, Users, TrendingUp, Award, Copy, Share2, Edit } from 'lucide-react';
+import { MapPin, Calendar, Users, TrendingUp, Award, Copy, Share2, Edit, Shield, HelpCircle, Twitter } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 import type { UserProfile, Referral } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
+import { Link } from 'wouter';
 
 export default function Profile() {
   const { userId } = useAuth();
@@ -180,6 +181,62 @@ export default function Profile() {
                 <Share2 className="w-5 h-5" />
                 <span>Share</span>
               </button>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 px-2 pb-2 pt-4">Legal</h3>
+            <div className="flex flex-col gap-2">
+              <Link href="/terms" data-testid="link-terms">
+                <button className="w-full flex items-center gap-4 bg-white dark:bg-slate-800 px-4 min-h-14 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" data-testid="button-terms">
+                  <div className="flex items-center justify-center rounded-lg bg-primary/20 w-10 h-10 shrink-0">
+                    <Shield className="w-5 h-5 text-gray-900 dark:text-gray-100" />
+                  </div>
+                  <p className="flex-1 text-base font-medium text-gray-900 dark:text-gray-100 text-left truncate">Terms & Privacy Policy</p>
+                  <div className="shrink-0">
+                    <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 px-2 pb-2 pt-4">Support</h3>
+            <div className="flex flex-col gap-2">
+              <Link href="/help" data-testid="link-help">
+                <button className="w-full flex items-center gap-4 bg-white dark:bg-slate-800 px-4 min-h-14 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" data-testid="button-help">
+                  <div className="flex items-center justify-center rounded-lg bg-primary/20 w-10 h-10 shrink-0">
+                    <HelpCircle className="w-5 h-5 text-gray-900 dark:text-gray-100" />
+                  </div>
+                  <p className="flex-1 text-base font-medium text-gray-900 dark:text-gray-100 text-left truncate">Help Center</p>
+                  <div className="shrink-0">
+                    <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 px-2 pb-2 pt-4">Community</h3>
+            <div className="flex flex-col gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center rounded-lg bg-[#1DA1F2]/20 w-10 h-10 shrink-0">
+                  <Twitter className="w-5 h-5 text-[#1DA1F2]" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-base font-bold text-gray-900 dark:text-gray-100">Follow us on Twitter</p>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">@PingCaset</p>
+                </div>
+                <div className="bg-primary/20 text-primary dark:bg-primary/30 dark:text-primary font-semibold px-3 py-1 text-xs rounded-full whitespace-nowrap">
+                  Coming Soon
+                </div>
+              </div>
             </div>
           </div>
         </div>
