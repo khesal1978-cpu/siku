@@ -45,3 +45,5 @@
 [x] 45. Implemented referral system with 200 coins for inviter, 400 for invited, 1.4x multiplier per invite
 [x] 46. Added real-time mining earnings display with proper capping to session duration
 [x] 47. Updated UI text in OnboardingModal and Team page to reflect new values
+[x] 48. Fixed workflow configuration after environment restart - configured with webview output type
+[x] 49. Verified application is running successfully on port 5000 with Express server and background jobs
