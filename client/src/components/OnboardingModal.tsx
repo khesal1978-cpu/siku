@@ -13,7 +13,7 @@ interface OnboardingStep {
 const steps: OnboardingStep[] = [
   {
     title: 'Welcome to PingCaset!',
-    description: 'Start mining Caset coins every 6 hours. Earn 2 coins per hour with our automated mining system.',
+    description: 'Start mining Caset coins every 1 minute. Earn 2 coins per hour with our automated mining system.',
     highlight: 'Tap the mining button to start'
   },
   {
