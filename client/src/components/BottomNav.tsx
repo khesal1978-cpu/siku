@@ -13,7 +13,7 @@ const navItems = [
 export default function BottomNav() {
   const [location] = useLocation();
   
-  const hiddenPaths = ['/settings', '/terms', '/help'];
+  const hiddenPaths = ['/terms', '/help'];
   const shouldHide = hiddenPaths.some(path => location.startsWith(path));
 
   if (shouldHide) return null;
