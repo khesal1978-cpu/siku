@@ -711,7 +711,7 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
   }
 
-  /* Performance optimizations */
+  /* Performance optimizations for 60fps */
   .will-change-transform {
     will-change: transform;
   }
@@ -723,6 +723,51 @@
   .gpu-accelerated {
     transform: translateZ(0);
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     perspective: 1000px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Force GPU acceleration for smooth 60fps animations */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Optimize animations */
+  @media (prefers-reduced-motion: no-preference) {
+    * {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Better mobile touch performance */
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  /* Optimize transforms for 60fps */
+  [class*="motion-"],
+  [class*="animate-"],
+  [data-motion],
+  [data-animate] {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Remove will-change after animation completes to save memory */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
