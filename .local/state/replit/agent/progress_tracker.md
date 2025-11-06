@@ -52,3 +52,10 @@
 [x] 52. Fixed toFixed error by safely accessing data?.coinsEarned with optional chaining
 [x] 53. Updated mining button to show "Claim" text when ready instead of "100%"
 [x] 54. Removed "Ready to Claim!" UI section - now only the button shows claim state
+[x] 55. Changed mining cycle duration from 1 minute back to 6 hours for production use
+[x] 56. Updated onboarding modal text from "every 1 minute" back to "every 6 hours"
+[x] 57. Merged Settings page content into Profile page (Legal, Support, Community sections)
+[x] 58. Removed Settings page and its route from App.tsx
+[x] 59. Deleted Settings.tsx file - Settings now integrated into Profile
+[x] 60. Cleared existing mining sessions from database to apply 6-hour cycle
+[x] 61. Architect reviewed all changes - verified correct implementation with no issues
