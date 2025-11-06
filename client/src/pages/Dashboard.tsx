@@ -54,7 +54,7 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ['/api/profile', userId] });
       toast({
         title: "Mining Claimed!",
-        description: `You earned ${data.coinsEarned.toFixed(2)} CASET!`,
+        description: `You earned ${data?.coinsEarned?.toFixed(2) || 0} CASET!`,
       });
     },
     onError: (error: any) => {
@@ -378,12 +378,12 @@ export default function Dashboard() {
                     repeat: progress === 100 ? Infinity : 0,
                   }}
                 >
-                  {Math.round(progress)}%
+                  {progress === 100 ? 'Claim' : `${Math.round(progress)}%`}
                 </motion.p>
               </motion.button>
             </div>
 
-            {isMining && (
+            {isMining && progress < 100 && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -394,18 +394,6 @@ export default function Dashboard() {
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-700 dark:bg-emerald-400"></span>
                 </span>
                 <p className="font-semibold text-emerald-700 dark:text-emerald-300">Mining Active</p>
-              </motion.div>
-            )}
-
-            {progress === 100 && (
-              <motion.div
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                className="mt-4 px-8 py-4 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-2xl shadow-lg"
-              >
-                <p className="text-white font-bold text-xl flex items-center gap-2">
-                  ✨ Ready to Claim! ✨
-                </p>
               </motion.div>
             )}
           </div>

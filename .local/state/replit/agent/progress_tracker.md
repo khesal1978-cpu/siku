@@ -49,3 +49,6 @@
 [x] 49. Verified application is running successfully on port 5000 with Express server and background jobs
 [x] 50. Changed mining cycle duration from 6 hours to 1 minute for testing purposes
 [x] 51. Cleared existing mining sessions from database to apply new 1-minute cycle
+[x] 52. Fixed toFixed error by safely accessing data?.coinsEarned with optional chaining
+[x] 53. Updated mining button to show "Claim" text when ready instead of "100%"
+[x] 54. Removed "Ready to Claim!" UI section - now only the button shows claim state
