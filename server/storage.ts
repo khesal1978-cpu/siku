@@ -33,7 +33,10 @@ import { eq, and, desc } from "drizzle-orm";
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByGoogleId(googleId: string): Promise<User | undefined>;
+  getUserByReferralCode(referralCode: string): Promise<User | undefined>;
+  createUser(user: Omit<InsertUser, 'referralCode'> & { referralCode: string }): Promise<User>;
   updateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
   
   getUserProfile(userId: string): Promise<UserProfile | undefined>;
@@ -67,7 +70,6 @@ export interface IStorage {
   getReferrals(userId: string): Promise<Referral[]>;
   createReferral(referral: InsertReferral): Promise<Referral>;
   getReferralByCode(code: string): Promise<Referral | undefined>;
-  getUserByReferralCode(referrerId: string): Promise<User | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -81,7 +83,22 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.email, email));
+    return user || undefined;
+  }
+
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.googleId, googleId));
+    return user || undefined;
+  }
+
+  async getUserByReferralCode(referralCode: string): Promise<User | undefined> {
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.referralCode, referralCode));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: Omit<InsertUser, 'referralCode'> & { referralCode: string }): Promise<User> {
     const [user] = await db
       .insert(usersTable)
       .values(insertUser)
@@ -272,15 +289,6 @@ export class DatabaseStorage implements IStorage {
       .where(eq(referralsTable.referralCode, code))
       .limit(1);
     return referral || undefined;
-  }
-
-  async getUserByReferralCode(referrerId: string): Promise<User | undefined> {
-    const [user] = await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.id, referrerId))
-      .limit(1);
-    return user || undefined;
   }
 }
 

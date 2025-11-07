@@ -17,11 +17,34 @@ import Leaderboard from '@/pages/Leaderboard';
 import Profile from '@/pages/Profile';
 import Terms from '@/pages/Terms';
 import HelpCenter from '@/pages/HelpCenter';
+import Login from '@/pages/Login';
+import Signup from '@/pages/Signup';
 import NotFound from "@/pages/not-found";
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { WebSocketProvider } from '@/contexts/WebSocketContext';
+import { Redirect } from 'wouter';
+
+function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
+  const { loading, currentUser } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-cyan-500/20">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return <Redirect to="/login" />;
+  }
+
+  return <Component />;
+}
 
 function Router() {
+  const { currentUser, loading } = useAuth();
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -29,17 +52,23 @@ function Router() {
       transition={{ duration: 0.3 }}
     >
       <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/games" component={Games} />
-        <Route path="/team" component={Team} />
-        <Route path="/wallet" component={Wallet} />
-        <Route path="/leaderboard" component={Leaderboard} />
-        <Route path="/profile" component={Profile} />
-        <Route path="/terms" component={Terms} />
-        <Route path="/help" component={HelpCenter} />
+        <Route path="/login">
+          {() => !loading && currentUser ? <Redirect to="/" /> : <Login />}
+        </Route>
+        <Route path="/signup">
+          {() => !loading && currentUser ? <Redirect to="/" /> : <Signup />}
+        </Route>
+        <Route path="/">{() => <ProtectedRoute component={Dashboard} />}</Route>
+        <Route path="/games">{() => <ProtectedRoute component={Games} />}</Route>
+        <Route path="/team">{() => <ProtectedRoute component={Team} />}</Route>
+        <Route path="/wallet">{() => <ProtectedRoute component={Wallet} />}</Route>
+        <Route path="/leaderboard">{() => <ProtectedRoute component={Leaderboard} />}</Route>
+        <Route path="/profile">{() => <ProtectedRoute component={Profile} />}</Route>
+        <Route path="/terms">{() => <ProtectedRoute component={Terms} />}</Route>
+        <Route path="/help">{() => <ProtectedRoute component={HelpCenter} />}</Route>
         <Route component={NotFound} />
       </Switch>
-      <BottomNav />
+      {currentUser && <BottomNav />}
     </motion.div>
   );
 }

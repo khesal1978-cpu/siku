@@ -2,8 +2,276 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { wsManager } from "./websocket";
+import { verifyToken } from "./firebase-admin";
+
+function generateReferralCode(length = 8): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+async function initializeNewUser(userId: string, username: string, invitationCode?: string) {
+  const profile = await storage.createUserProfile({
+    userId,
+    balance: 0,
+    energy: 100,
+    maxEnergy: 100,
+    streak: 0,
+    lastLogin: new Date(),
+    miningSpeed: 2,
+    miningMultiplier: 1,
+    lastEnergyRefill: new Date(),
+    totalMined: 0
+  });
+
+  const defaultAchievements = [
+    {
+      userId,
+      achievementKey: 'daily_login',
+      title: 'Daily Login',
+      description: 'Log in to the app daily',
+      reward: 5,
+      isCompleted: false,
+      progress: 0,
+      target: 1
+    },
+    {
+      userId,
+      achievementKey: 'mine_coins',
+      title: 'Mine 1000 Coins',
+      description: 'Mine a total of 1000 CASET coins',
+      reward: 100,
+      isCompleted: false,
+      progress: 0,
+      target: 1000
+    },
+    {
+      userId,
+      achievementKey: 'invite_friends',
+      title: 'Invite 5 Friends',
+      description: 'Invite 5 friends to join PingCaset',
+      reward: 100,
+      isCompleted: false,
+      progress: 0,
+      target: 5
+    },
+    {
+      userId,
+      achievementKey: 'play_games',
+      title: 'Play 10 Games',
+      description: 'Play mini-games 10 times',
+      reward: 50,
+      isCompleted: false,
+      progress: 0,
+      target: 10
+    }
+  ];
+
+  for (const achievement of defaultAchievements) {
+    await storage.createAchievement(achievement);
+  }
+
+  if (invitationCode) {
+    const inviter = await storage.getUserByReferralCode(invitationCode);
+    if (inviter) {
+      await storage.createReferral({
+        referrerId: inviter.id,
+        referredId: userId,
+        referralCode: invitationCode,
+        rewardClaimed: false
+      });
+
+      await storage.createTransaction({
+        userId,
+        amount: 400,
+        type: 'referral_bonus',
+        description: 'Signup bonus from referral'
+      });
+
+      await storage.createTransaction({
+        userId: inviter.id,
+        amount: 200,
+        type: 'referral_reward',
+        description: `Invited ${username}`
+      });
+
+      await storage.updateUserProfile(userId, {
+        balance: profile.balance + 400
+      });
+
+      const inviterProfile = await storage.getUserProfile(inviter.id);
+      if (inviterProfile) {
+        await storage.updateUserProfile(inviter.id, {
+          balance: inviterProfile.balance + 200,
+          miningMultiplier: inviterProfile.miningMultiplier + 0.4
+        });
+      }
+    }
+  }
+
+  return profile;
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  app.post('/api/auth/signup', async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: 'No authorization header' });
+      }
+
+      const token = authHeader.split(' ')[1];
+      const decodedToken = await verifyToken(token);
+      
+      if (!decodedToken || !decodedToken.email) {
+        return res.status(401).json({ message: 'Invalid or missing token' });
+      }
+
+      const { username, email, invitationCode } = req.body;
+
+      if (decodedToken.email !== email) {
+        return res.status(403).json({ message: 'Email mismatch with token' });
+      }
+
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: 'User already exists' });
+      }
+
+      const existingUsername = await storage.getUserByUsername(username);
+      if (existingUsername) {
+        return res.status(400).json({ message: 'Username already taken' });
+      }
+
+      const referralCode = generateReferralCode();
+      const user = await storage.createUser({
+        username,
+        email,
+        password: null,
+        referralCode,
+        invitedBy: invitationCode || null
+      });
+
+      await initializeNewUser(user.id, username, invitationCode);
+
+      res.json(user);
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      res.status(500).json({ message: error.message || 'Failed to create account' });
+    }
+  });
+
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: 'No authorization header' });
+      }
+
+      const token = authHeader.split(' ')[1];
+      const decodedToken = await verifyToken(token);
+      
+      if (!decodedToken || !decodedToken.email) {
+        return res.status(401).json({ message: 'Invalid or missing token' });
+      }
+
+      const { email } = req.body;
+
+      if (decodedToken.email !== email) {
+        return res.status(403).json({ message: 'Email mismatch with token' });
+      }
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json(user);
+    } catch (error: any) {
+      console.error('Login error:', error);
+      res.status(500).json({ message: error.message || 'Failed to login' });
+    }
+  });
+
+  app.post('/api/auth/google', async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: 'No authorization header' });
+      }
+
+      const token = authHeader.split(' ')[1];
+      const decodedToken = await verifyToken(token);
+      
+      if (!decodedToken || !decodedToken.uid) {
+        return res.status(401).json({ message: 'Invalid or missing token' });
+      }
+
+      const { email, displayName, photoURL, googleId, invitationCode } = req.body;
+
+      if (decodedToken.uid !== googleId) {
+        return res.status(403).json({ message: 'Google ID mismatch with token' });
+      }
+
+      let user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        user = await storage.getUserByGoogleId(googleId);
+      }
+
+      if (user) {
+        return res.json(user);
+      }
+
+      const referralCode = generateReferralCode();
+      user = await storage.createUser({
+        username: displayName || email.split('@')[0],
+        email,
+        password: null,
+        googleId,
+        photoURL,
+        referralCode,
+        invitedBy: invitationCode || null
+      });
+
+      await initializeNewUser(user.id, displayName || email.split('@')[0], invitationCode);
+
+      res.json(user);
+    } catch (error: any) {
+      console.error('Google auth error:', error);
+      res.status(500).json({ message: error.message || 'Failed to authenticate with Google' });
+    }
+  });
+
+  app.get('/api/auth/me', async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return res.status(401).json({ message: 'No authorization header' });
+      }
+
+      const token = authHeader.split(' ')[1];
+      const decodedToken = await verifyToken(token);
+      
+      if (!decodedToken) {
+        return res.status(401).json({ message: 'Invalid token' });
+      }
+
+      const user = await storage.getUserByEmail(decodedToken.email || '');
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json(user);
+    } catch (error: any) {
+      console.error('Get user error:', error);
+      res.status(500).json({ message: error.message || 'Failed to get user' });
+    }
+  });
+
   app.get('/api/profile/:userId', async (req, res) => {
     try {
       let profile = await storage.getUserProfile(req.params.userId);

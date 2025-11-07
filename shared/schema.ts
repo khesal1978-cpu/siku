@@ -6,9 +6,14 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  email: text("email").unique(),
+  password: text("password"),
+  googleId: text("google_id").unique(),
+  photoURL: text("photo_url"),
   country: text("country"),
   avatar: text("avatar"),
+  referralCode: text("referral_code").notNull().unique(),
+  invitedBy: text("invited_by"),
   joinedAt: timestamp("joined_at").notNull().default(sql`now()`),
 });
 
@@ -93,9 +98,10 @@ export const miningSession = pgTable("mining_session", {
   isActive: boolean("is_active").notNull().default(true),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  joinedAt: true,
+  referralCode: true,
 });
 
 export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({
