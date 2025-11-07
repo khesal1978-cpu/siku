@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { MapPin, Calendar, Users, TrendingUp, Award, Copy, Share2, Edit, Shield, HelpCircle, Twitter } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { MapPin, Calendar, Users, TrendingUp, Award, Copy, Share2, Edit, Shield, HelpCircle, Twitter, Clock, Sparkles, Trophy, Target } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWebSocket } from '@/contexts/WebSocketContext';
 import { useQuery } from '@tanstack/react-query';
@@ -11,6 +13,7 @@ import { queryClient } from '@/lib/queryClient';
 import type { UserProfile, Referral } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
+import Card3D from '@/components/Card3D';
 
 export default function Profile() {
   const { userId } = useAuth();
@@ -118,23 +121,32 @@ export default function Profile() {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto -mt-16 px-4">
-        <div className="grid md:grid-cols-2 gap-4 rounded-2xl bg-white dark:bg-slate-800 p-4 shadow-md mb-8">
-          <div className="text-center">
-            <p className="text-xl font-bold text-gray-900 dark:text-gray-100" data-testid="text-mining-days">{daysMining}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Mining Days</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xl font-bold text-gray-900 dark:text-gray-100" data-testid="text-total-referrals">{referrals.length}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Referrals</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xl font-bold text-gray-900 dark:text-gray-100" data-testid="text-total-mined">{profile.totalMined.toLocaleString()}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Total Mined</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xl font-bold text-gray-900 dark:text-gray-100" data-testid="text-level">{userLevel}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Current Level</p>
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          {[
+            { icon: Clock, label: 'Mining Days', value: daysMining, color: 'from-blue-500 to-cyan-500', testId: 'text-mining-days' },
+            { icon: Users, label: 'Referrals', value: referrals.length, color: 'from-purple-500 to-pink-500', testId: 'text-total-referrals' },
+            { icon: Trophy, label: 'Total Mined', value: profile.totalMined.toLocaleString(), color: 'from-amber-500 to-orange-500', testId: 'text-total-mined' },
+            { icon: Target, label: 'Level', value: userLevel, color: 'from-emerald-500 to-teal-500', testId: 'text-level' },
+          ].map((stat, index) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Card3D intensity="low">
+                <Card className={`p-4 text-center bg-gradient-to-br ${stat.color} border-none shadow-lg text-white`}>
+                  <div className="flex justify-center mb-2">
+                    <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+                      <stat.icon className="w-6 h-6" />
+                    </div>
+                  </div>
+                  <p className="text-2xl font-bold mb-1" data-testid={stat.testId}>{stat.value}</p>
+                  <p className="text-xs opacity-90">{stat.label}</p>
+                </Card>
+              </Card3D>
+            </motion.div>
+          ))}
         </div>
 
         <div className="space-y-6 px-4">
@@ -173,31 +185,58 @@ export default function Profile() {
             </button>
           </div>
 
-          <div className="rounded-2xl bg-primary/10 dark:bg-primary/20 p-6 text-center">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Your Referral Code</h3>
-            <p className="mt-1 mb-4 text-sm text-gray-600 dark:text-gray-400">Share your code and earn rewards together!</p>
-            <div className="mb-4 rounded-lg border-2 border-dashed border-primary/50 bg-white/50 dark:bg-slate-800/50 p-4">
-              <p className="text-2xl font-bold tracking-widest text-primary" data-testid="text-referral-code">{referralCode}</p>
-            </div>
-            <div className="flex space-x-4">
-              <button
-                onClick={handleCopyCode}
-                className="flex flex-1 items-center justify-center space-x-2 rounded-lg bg-gray-200 dark:bg-slate-700 py-3 px-4 font-semibold text-gray-800 dark:text-gray-200 transition duration-200 hover:bg-gray-300 dark:hover:bg-slate-600"
-                data-testid="button-copy"
-              >
-                <Copy className="w-5 h-5" />
-                <span>Copy</span>
-              </button>
-              <button
-                onClick={handleShareCode}
-                className="flex flex-1 items-center justify-center space-x-2 rounded-lg bg-primary py-3 px-4 font-semibold text-white transition duration-200 hover:bg-primary/90"
-                data-testid="button-share"
-              >
-                <Share2 className="w-5 h-5" />
-                <span>Share</span>
-              </button>
-            </div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Card className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-teal-600 text-white p-8 shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent" />
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+              
+              <div className="relative z-10 text-center">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <Sparkles className="w-6 h-6" />
+                  <h3 className="text-2xl font-bold">Your Referral Code</h3>
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <p className="mb-6 text-sm opacity-90">
+                  Invite friends and earn <span className="font-bold">200 coins</span>! They get <span className="font-bold">400 coins</span> 🎁
+                </p>
+                
+                <div className="mb-6 rounded-2xl border-2 border-white/30 bg-white/20 backdrop-blur-md p-6 shadow-lg">
+                  <p className="text-4xl font-bold tracking-widest" data-testid="text-referral-code">
+                    {referralCode}
+                  </p>
+                  <p className="text-xs opacity-75 mt-2">{referralLink}</p>
+                </div>
+                
+                <div className="flex gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleCopyCode}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-white/20 backdrop-blur-md py-4 px-6 font-bold transition-all hover:bg-white/30 border border-white/30"
+                    data-testid="button-copy"
+                  >
+                    <Copy className="w-5 h-5" />
+                    <span>Copy Code</span>
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleShareCode}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-white text-primary py-4 px-6 font-bold transition-all hover:bg-white/90 shadow-lg"
+                    data-testid="button-share"
+                  >
+                    <Share2 className="w-5 h-5" />
+                    <span>Share Link</span>
+                  </motion.button>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
 
           <div>
             <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 px-2 pb-2 pt-4">Legal</h3>
