@@ -46,7 +46,13 @@ export default function Profile() {
     return () => unsubscribe();
   }, [userId, subscribe]);
 
-  const referralCode = userId ? `PING${userId.substring(0, 8).toUpperCase()}` : 'LOADING...';
+  const { data: user } = useQuery({
+    queryKey: ['/api/auth/me'],
+    enabled: !!userId,
+  });
+
+  const referralCode = user?.referralCode || 'LOADING...';
+  const referralLink = `https://pingcaset.in/signup?ref=${referralCode}`;
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(referralCode);
@@ -56,14 +62,23 @@ export default function Profile() {
     });
   };
 
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(referralLink);
+    toast({
+      title: "Link Copied!",
+      description: "Referral link copied to clipboard",
+    });
+  };
+
   const handleShareCode = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'Join PingCaset',
-        text: `Use my referral code ${referralCode} to join PingCaset and start mining!`,
+        title: 'Join PingCaset!',
+        text: `Use my referral code ${referralCode} to join PingCaset and earn 400 bonus coins! 🪙`,
+        url: referralLink,
       });
     } else {
-      handleCopyCode();
+      handleCopyLink();
     }
   };
 

@@ -13,6 +13,24 @@ function generateReferralCode(length = 8): string {
   return result;
 }
 
+async function updateAchievementProgress(userId: string, achievementKey: string, incrementBy: number = 1) {
+  try {
+    const achievements = await storage.getAchievements(userId);
+    const achievement = achievements.find(a => a.achievementKey === achievementKey && !a.isCompleted);
+    
+    if (achievement) {
+      const newProgress = Math.min(achievement.progress + incrementBy, achievement.target);
+      await storage.updateAchievement(achievement.id, { progress: newProgress });
+      
+      if (newProgress >= achievement.target) {
+        wsManager.broadcast(userId, 'achievement_ready', { achievement });
+      }
+    }
+  } catch (error) {
+    console.error(`Error updating achievement ${achievementKey} for user ${userId}:`, error);
+  }
+}
+
 async function initializeNewUser(userId: string, username: string, invitationCode?: string) {
   const profile = await storage.createUserProfile({
     userId,
@@ -109,8 +127,12 @@ async function initializeNewUser(userId: string, username: string, invitationCod
           miningMultiplier: inviterProfile.miningMultiplier + 0.4
         });
       }
+
+      await updateAchievementProgress(inviter.id, 'invite_friends', 1);
     }
   }
+
+  await updateAchievementProgress(userId, 'daily_login', 1);
 
   return profile;
 }
