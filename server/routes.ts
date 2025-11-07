@@ -459,6 +459,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         description: 'Spin wheel reward'
       });
 
+      await updateAchievementProgress(req.params.userId, 'play_games', 1);
+
       res.json({ reward });
       wsManager.broadcast(req.params.userId, 'profile_updated', updatedProfile);
     } catch (error) {

@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Gift, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import casetIcon from '@assets/ChatGPT Image Nov 5, 2025, 06_57_27 PM_1762426824094.png';
+import { useWebSocket } from '@/contexts/WebSocketContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SpinWheelProps {
   onSpin: () => Promise<number>;
@@ -13,12 +15,12 @@ interface SpinWheelProps {
 }
 
 const wheelSegments = [
-  { reward: 0, color: 'from-gray-500 to-gray-600', borderColor: 'border-gray-600', label: 'Unlucky', textColor: 'text-white' },
-  { reward: 30, color: 'from-emerald-400 to-emerald-500', borderColor: 'border-emerald-500', label: '30', textColor: 'text-white' },
-  { reward: 60, color: 'from-teal-400 to-teal-500', borderColor: 'border-teal-500', label: '60', textColor: 'text-white' },
-  { reward: 100, color: 'from-blue-400 to-blue-500', borderColor: 'border-blue-500', label: '100', textColor: 'text-white' },
-  { reward: 400, color: 'from-purple-400 to-purple-500', borderColor: 'border-purple-500', label: '400', textColor: 'text-white' },
-  { reward: 1000, color: 'from-amber-400 to-orange-500', borderColor: 'border-orange-500', label: '1000', textColor: 'text-white' },
+  { reward: 0, colors: ['#6b7280', '#4b5563'], label: 'Unlucky', icon: '😢' },
+  { reward: 30, colors: ['#34d399', '#10b981'], label: '30', icon: casetIcon },
+  { reward: 60, colors: ['#2dd4bf', '#14b8a6'], label: '60', icon: casetIcon },
+  { reward: 100, colors: ['#60a5fa', '#3b82f6'], label: '100', icon: casetIcon },
+  { reward: 400, colors: ['#a78bfa', '#8b5cf6'], label: '400', icon: casetIcon },
+  { reward: 1000, colors: ['#fbbf24', '#f59e0b'], label: '1000', icon: casetIcon },
 ];
 
 export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: SpinWheelProps) {
@@ -26,9 +28,20 @@ export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: Spi
   const [rotation, setRotation] = useState(0);
   const [wonAmount, setWonAmount] = useState<number | null>(null);
   const prefersReducedMotion = useReducedMotion();
+  const { subscribe } = useWebSocket();
+  const { userId } = useAuth();
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const unsubscribe = subscribe('profile_updated', () => {
+    });
+
+    return () => unsubscribe();
+  }, [userId, subscribe]);
 
   const handleSpin = async () => {
-    if (!canSpin || isSpinning) return;
+    if (!canSpin || isSpinning || energy < 15) return;
 
     setIsSpinning(true);
     setWonAmount(null);
@@ -54,6 +67,22 @@ export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: Spi
     }
   };
 
+  const createWheelPath = (index: number, totalSegments: number) => {
+    const anglePerSegment = 360 / totalSegments;
+    const startAngle = (index * anglePerSegment - 90) * (Math.PI / 180);
+    const endAngle = ((index + 1) * anglePerSegment - 90) * (Math.PI / 180);
+    const radius = 180;
+    const centerX = 200;
+    const centerY = 200;
+
+    const x1 = centerX + radius * Math.cos(startAngle);
+    const y1 = centerY + radius * Math.sin(startAngle);
+    const x2 = centerX + radius * Math.cos(endAngle);
+    const y2 = centerY + radius * Math.sin(endAngle);
+
+    return `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2} Z`;
+  };
+
   return (
     <Card className="p-6 bg-gradient-to-br from-primary/5 via-background to-primary/10 border-primary/20 shadow-xl" data-testid="card-spin-wheel">
       <div className="text-center mb-6">
@@ -72,13 +101,14 @@ export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: Spi
         </div>
 
         <div className="relative w-80 h-80 sm:w-96 sm:h-96">
-          <motion.div
-            className="w-full h-full rounded-full relative overflow-hidden shadow-2xl border-[6px] border-white dark:border-slate-700"
+          <motion.svg
+            width="400"
+            height="400"
+            viewBox="0 0 400 400"
+            className="w-full h-full drop-shadow-2xl"
             style={{ 
               rotate: rotation,
               willChange: 'transform',
-              backfaceVisibility: 'hidden',
-              WebkitBackfaceVisibility: 'hidden',
             }}
             animate={{ 
               rotate: rotation,
@@ -87,72 +117,93 @@ export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: Spi
               rotate: { duration: prefersReducedMotion ? 2 : 4, ease: [0.22, 0.61, 0.36, 1] },
             }}
           >
+            <defs>
+              {wheelSegments.map((segment, index) => (
+                <linearGradient key={`gradient-${index}`} id={`gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor={segment.colors[0]} />
+                  <stop offset="100%" stopColor={segment.colors[1]} />
+                </linearGradient>
+              ))}
+            </defs>
+            
+            <circle cx="200" cy="200" r="194" fill="white" className="dark:fill-slate-800" stroke="currentColor" strokeWidth="8" className="text-white dark:text-slate-700" />
+            
             {wheelSegments.map((segment, index) => {
-              const angle = (360 / wheelSegments.length) * index;
-              const nextAngle = (360 / wheelSegments.length) * (index + 1);
+              const anglePerSegment = 360 / wheelSegments.length;
+              const middleAngle = (index * anglePerSegment + anglePerSegment / 2) * (Math.PI / 180);
+              const textRadius = 120;
+              const iconRadius = 85;
+              const textX = 200 + textRadius * Math.sin(middleAngle);
+              const textY = 200 - textRadius * Math.cos(middleAngle);
+              const iconX = 200 + iconRadius * Math.sin(middleAngle);
+              const iconY = 200 - iconRadius * Math.cos(middleAngle);
               
               return (
-                <div
-                  key={index}
-                  className={`absolute w-full h-full bg-gradient-to-br ${segment.color} border-r border-white/20`}
-                  style={{
-                    clipPath: `polygon(50% 50%, ${50 + 50 * Math.cos((angle - 30) * Math.PI / 180)}% ${50 + 50 * Math.sin((angle - 30) * Math.PI / 180)}%, ${50 + 50 * Math.cos((angle + 30) * Math.PI / 180)}% ${50 + 50 * Math.sin((angle + 30) * Math.PI / 180)}%)`,
-                    willChange: 'transform',
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 flex flex-col items-center justify-start gap-2 pt-8"
-                    style={{
-                      transform: `rotate(${angle + 30}deg)`,
-                      transformOrigin: 'center center',
+                <g key={index}>
+                  <path
+                    d={createWheelPath(index, wheelSegments.length)}
+                    fill={`url(#gradient-${index})`}
+                    stroke="white"
+                    strokeWidth="2"
+                    opacity="0.95"
+                  />
+                  
+                  {typeof segment.icon === 'string' && segment.icon.startsWith('http') || segment.icon === casetIcon ? (
+                    <image
+                      href={segment.icon}
+                      x={iconX - 20}
+                      y={iconY - 20}
+                      width="40"
+                      height="40"
+                      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
+                    />
+                  ) : (
+                    <text
+                      x={iconX}
+                      y={iconY + 8}
+                      textAnchor="middle"
+                      fontSize="32"
+                      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
+                    >
+                      {segment.icon}
+                    </text>
+                  )}
+                  
+                  <text
+                    x={textX}
+                    y={textY + 6}
+                    textAnchor="middle"
+                    fontSize="28"
+                    fontWeight="900"
+                    fill="white"
+                    style={{ 
+                      filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.4))',
+                      textShadow: '0 2px 8px rgba(0,0,0,0.5)'
                     }}
                   >
-                    {segment.reward !== 0 ? (
-                      <>
-                        <img 
-                          src={casetIcon} 
-                          alt="Caset" 
-                          className="w-12 h-12 drop-shadow-lg"
-                        />
-                        <span className={`text-2xl font-black ${segment.textColor} drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]`}>
-                          {segment.label}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <div className="text-4xl mb-1">😢</div>
-                        <span className={`text-lg font-bold ${segment.textColor} drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]`}>
-                          {segment.label}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
+                    {segment.label}
+                  </text>
+                </g>
               );
             })}
             
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <motion.div 
-                className="w-24 h-24 bg-gradient-to-br from-white via-gray-50 to-white dark:from-slate-700 dark:via-slate-800 dark:to-slate-700 rounded-full shadow-2xl flex items-center justify-center border-4 border-primary relative overflow-hidden"
-                style={{ willChange: 'box-shadow' }}
-                animate={{
-                  boxShadow: [
-                    '0 0 20px rgba(20, 184, 166, 0.4)',
-                    '0 0 40px rgba(20, 184, 166, 0.6)',
-                    '0 0 20px rgba(20, 184, 166, 0.4)',
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-full" />
-                <img 
-                  src={casetIcon} 
-                  alt="Caset Logo" 
-                  className="w-16 h-16 relative z-10 drop-shadow-lg"
-                />
-              </motion.div>
-            </div>
-          </motion.div>
+            <circle cx="200" cy="200" r="55" fill="url(#center-gradient)" stroke="currentColor" strokeWidth="4" className="text-primary" />
+            <defs>
+              <linearGradient id="center-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="white" className="dark:stop-color-slate-700" />
+                <stop offset="100%" stopColor="#f0f0f0" className="dark:stop-color-slate-800" />
+              </linearGradient>
+            </defs>
+            
+            <image
+              href={casetIcon}
+              x="168"
+              y="168"
+              width="64"
+              height="64"
+              style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))' }}
+            />
+          </motion.svg>
         </div>
       </div>
 
