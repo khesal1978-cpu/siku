@@ -1,9 +1,12 @@
-import { motion } from 'framer-motion';
-import { Rocket, Clock, TrendingUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Rocket, Clock, TrendingUp, Zap, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import type { Boost } from '@shared/schema';
+import casetIcon from '@assets/ChatGPT Image Nov 5, 2025, 06_57_27 PM_1762426824094.png';
+import Card3D from '@/components/Card3D';
 
 interface BoostCardProps {
   boosts: Boost[];
@@ -47,20 +50,29 @@ const boostTypes = [
 ];
 
 export default function BoostCard({ boosts, onActivateBoost }: BoostCardProps) {
+  const [now, setNow] = useState(new Date());
   const activeBoosts = boosts.filter(b => b.isActive);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const getTimeRemaining = (expiresAt: Date) => {
-    const now = new Date();
     const diff = new Date(expiresAt).getTime() - now.getTime();
     if (diff <= 0) return '0s';
     
-    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
     const seconds = Math.floor((diff % 60000) / 1000);
+    
+    if (hours > 0) return `${hours}h ${minutes}m`;
     return minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
   };
 
   const getProgress = (startedAt: Date, expiresAt: Date) => {
-    const now = new Date();
     const start = new Date(startedAt).getTime();
     const end = new Date(expiresAt).getTime();
     const current = now.getTime();
@@ -71,95 +83,163 @@ export default function BoostCard({ boosts, onActivateBoost }: BoostCardProps) {
     return ((end - current) / (end - start)) * 100;
   };
 
+  const isBoostActive = (boostType: string) => {
+    return activeBoosts.some(b => b.boostType === boostType);
+  };
+
   return (
-    <div className="space-y-4">
-      {activeBoosts.length > 0 && (
-        <Card className="p-4 bg-gradient-to-br from-primary/10 to-primary/5" data-testid="card-active-boosts">
-          <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-            <Rocket className="w-5 h-5 text-primary" />
-            Active Boosts
-          </h3>
-          <div className="space-y-3">
-            {activeBoosts.map((boost) => {
-              const boostInfo = boostTypes.find(b => b.type === boost.boostType);
-              if (!boostInfo) return null;
-
-              const progress = getProgress(boost.startedAt, boost.expiresAt);
-              const timeRemaining = getTimeRemaining(boost.expiresAt);
-
-              return (
-                <motion.div
-                  key={boost.id}
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  className={`p-3 rounded-lg bg-gradient-to-r ${boostInfo.color} text-white`}
-                  data-testid={`boost-active-${boost.boostType}`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <boostInfo.icon className="w-5 h-5" />
-                      <span className="font-semibold">{boost.multiplier}x Speed</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-sm">
-                      <Clock className="w-4 h-4" />
-                      {timeRemaining}
-                    </div>
-                  </div>
-                  <Progress value={progress} className="h-2 bg-white/30" />
-                </motion.div>
-              );
-            })}
-          </div>
-        </Card>
-      )}
-
-      <Card className="p-6" data-testid="card-boost-shop">
-        <h3 className="font-bold text-xl mb-4 font-['Poppins']">Mining Boosts</h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          Activate boosts to increase your mining speed temporarily
-        </p>
-        
-        <div className="grid gap-3">
-          {boostTypes.map((boost) => (
-            <Card 
-              key={boost.type} 
-              className={`p-4 bg-gradient-to-br ${boost.color} text-white hover:shadow-lg transition-shadow`}
-              data-testid={`boost-option-${boost.type}`}
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <boost.icon className="w-6 h-6" />
+    <div className="space-y-6">
+      <AnimatePresence>
+        {activeBoosts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <Card className="p-6 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent border-primary/30 shadow-lg relative overflow-hidden" data-testid="card-active-boosts">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_3s_ease-in-out_infinite]" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-teal-600 shadow-lg">
+                    <Sparkles className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg">{boost.name}</h4>
-                    <p className="text-sm opacity-90">{boost.description}</p>
+                    <h3 className="font-bold text-xl font-['Poppins']">Active Boosts</h3>
+                    <p className="text-sm text-muted-foreground">Your mining is supercharged!</p>
                   </div>
                 </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="text-sm space-y-1">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    Duration: {boost.duration / 60} min
-                  </div>
-                  <div className="text-xs opacity-80">
-                    Cost: {boost.cost} CASET + {boost.energyCost} Energy
-                  </div>
+                <div className="space-y-3">
+                  {activeBoosts.map((boost, index) => {
+                    const boostInfo = boostTypes.find(b => b.type === boost.boostType);
+                    if (!boostInfo) return null;
+
+                    const progress = getProgress(boost.startedAt, boost.expiresAt);
+                    const timeRemaining = getTimeRemaining(boost.expiresAt);
+
+                    return (
+                      <motion.div
+                        key={boost.id}
+                        initial={{ scale: 0.95, opacity: 0, x: -20 }}
+                        animate={{ scale: 1, opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className={`relative p-4 rounded-xl bg-gradient-to-br ${boostInfo.color} text-white shadow-lg overflow-hidden`}
+                        data-testid={`boost-active-${boost.boostType}`}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent" />
+                        <div className="relative z-10">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+                                <boostInfo.icon className="w-6 h-6" />
+                              </div>
+                              <div>
+                                <span className="font-bold text-lg">{boost.multiplier}x Speed</span>
+                                <p className="text-xs opacity-90">Mining Boost Active</p>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              <div className="flex items-center gap-1.5 text-sm font-semibold bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
+                                <Clock className="w-4 h-4" />
+                                {timeRemaining}
+                              </div>
+                              <span className="text-xs opacity-75">{Math.round(progress)}% remaining</span>
+                            </div>
+                          </div>
+                          <div className="relative">
+                            <Progress value={progress} className="h-3 bg-white/20 border border-white/30" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full animate-[shimmer_2s_ease-in-out_infinite]" />
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
                 </div>
-                <Button
-                  onClick={() => onActivateBoost?.(boost.type)}
-                  variant="secondary"
-                  size="sm"
-                  className="font-semibold"
-                  data-testid={`button-activate-${boost.type}`}
-                >
-                  Activate
-                </Button>
               </div>
             </Card>
-          ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <Card className="p-6 bg-gradient-to-br from-background to-muted/20 border-muted shadow-md" data-testid="card-boost-shop">
+        <div className="flex items-center gap-3 mb-2">
+          <Zap className="w-6 h-6 text-primary" />
+          <h3 className="font-bold text-2xl font-['Poppins']">Mining Boosts</h3>
+        </div>
+        <p className="text-sm text-muted-foreground mb-6">
+          Supercharge your mining speed with temporary boosts
+        </p>
+        
+        <div className="grid gap-4">
+          {boostTypes.map((boost, index) => {
+            const active = isBoostActive(boost.type);
+            return (
+              <Card3D key={boost.type} intensity="medium">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className={`relative p-5 rounded-xl overflow-hidden transition-all ${
+                    active 
+                      ? 'opacity-60 bg-muted' 
+                      : `bg-gradient-to-br ${boost.color} hover:shadow-xl shadow-lg`
+                  }`}
+                  data-testid={`boost-option-${boost.type}`}
+                >
+                  {!active && (
+                    <>
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent" />
+                      <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-white/10 rounded-full blur-3xl" />
+                    </>
+                  )}
+                  <div className="relative z-10">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start gap-4">
+                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
+                          active ? 'bg-muted-foreground/20' : 'bg-white/20 backdrop-blur-sm shadow-lg'
+                        }`}>
+                          <boost.icon className={`w-7 h-7 ${active ? 'text-muted-foreground' : 'text-white'}`} />
+                        </div>
+                        <div>
+                          <h4 className={`font-bold text-lg mb-1 ${active ? 'text-muted-foreground' : 'text-white'}`}>
+                            {boost.name}
+                          </h4>
+                          <p className={`text-sm ${active ? 'text-muted-foreground/70' : 'text-white/90'}`}>
+                            {boost.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between pt-3 border-t border-white/20">
+                      <div className="space-y-1.5">
+                        <div className={`flex items-center gap-2 text-sm font-medium ${active ? 'text-muted-foreground' : 'text-white/95'}`}>
+                          <Clock className="w-4 h-4" />
+                          <span>{boost.duration / 60} minutes</span>
+                        </div>
+                        <div className={`flex items-center gap-2 text-xs ${active ? 'text-muted-foreground/70' : 'text-white/75'}`}>
+                          <img src={casetIcon} alt="Caset" className="w-4 h-4" />
+                          <span>{boost.cost} CASET</span>
+                          <span>•</span>
+                          <Zap className="w-3 h-3" />
+                          <span>{boost.energyCost} Energy</span>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => onActivateBoost?.(boost.type)}
+                        disabled={active}
+                        variant={active ? "ghost" : "secondary"}
+                        size="lg"
+                        className={`font-bold ${active ? '' : 'hover:scale-105 transition-transform'}`}
+                        data-testid={`button-activate-${boost.type}`}
+                      >
+                        {active ? 'Active' : 'Activate'}
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              </Card3D>
+            );
+          })}
         </div>
       </Card>
     </div>

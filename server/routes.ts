@@ -623,6 +623,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Invalid boost type' });
       }
 
+      const existingBoosts = await storage.getBoosts(req.params.userId);
+      const now = new Date();
+      const alreadyActive = existingBoosts.some(b => 
+        b.boostType === boostType && 
+        b.isActive && 
+        new Date(b.expiresAt) > now
+      );
+
+      if (alreadyActive) {
+        return res.status(400).json({ error: 'This boost is already active' });
+      }
+
       if (!profile || profile.balance < config.cost) {
         return res.status(400).json({ error: 'Insufficient balance' });
       }
