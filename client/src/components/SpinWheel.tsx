@@ -126,7 +126,7 @@ export default function SpinWheel({ onSpin, canSpin, nextSpinTime, energy }: Spi
               ))}
             </defs>
             
-            <circle cx="200" cy="200" r="194" fill="white" className="dark:fill-slate-800" stroke="currentColor" strokeWidth="8" className="text-white dark:text-slate-700" />
+            <circle cx="200" cy="200" r="194" fill="white" className="dark:fill-slate-800 text-white dark:text-slate-700" stroke="currentColor" strokeWidth="8" />
             
             {wheelSegments.map((segment, index) => {
               const anglePerSegment = 360 / wheelSegments.length;
