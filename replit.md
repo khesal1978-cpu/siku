@@ -58,9 +58,11 @@ Preferred communication style: Simple, everyday language.
 - CRUD operations abstracted through `IStorage` interface
 
 **Current Schema**
-- Users table with username/password authentication
+- Users table with email, username, googleId, photoURL, referralCode, invitedBy fields
 - UUID primary keys generated at database level
-- Extensible schema structure for future features (mining records, referrals, transactions)
+- Firebase authentication integration for secure access
+- Complete referral tracking system
+- Mining sessions, transactions, achievements, games, and profile data
 
 ### External Dependencies
 
@@ -86,9 +88,14 @@ Preferred communication style: Simple, everyday language.
 - @replit/vite-plugin-cartographer: Development cartographer
 - esbuild: Server bundling for production
 
+**Authentication & Security**
+- firebase: Client-side authentication SDK
+- firebase-admin: Server-side token verification
+- Secure token-based authentication flow
+
 **Utilities**
 - date-fns: Date manipulation and formatting
-- nanoid: Unique ID generation
+- nanoid: Unique ID generation (referral codes)
 - clsx & tailwind-merge: Conditional className utilities
 
 **Design Assets**
@@ -97,9 +104,32 @@ Preferred communication style: Simple, everyday language.
 - Glassmorphism and neumorphism design patterns
 
 **Authentication Strategy**
-- Currently implements basic username/password schema
-- Designed to support email, Google, and phone authentication
-- Session management prepared via connect-pg-simple
+- Firebase Authentication for secure user authentication
+- Email/password authentication with Firebase Auth
+- Google OAuth sign-in integration
+- Invitation code system with referral tracking
+- Referral link sharing with pingcaset.in domain
+- Session management via Firebase Admin SDK token verification
+
+## Recent Changes (November 7, 2025)
+
+**Firebase Authentication Implementation Complete**
+- ✅ Firebase client SDK integrated for frontend authentication
+- ✅ Firebase Admin SDK configured for secure backend token verification
+- ✅ Email/password authentication flow with beautiful themed login/signup pages
+- ✅ Google OAuth sign-in integration
+- ✅ Database schema updated with email, googleId, photoURL, referralCode, invitedBy fields
+- ✅ Invitation code system: Users can sign up with referral codes via URL (?ref=CODE)
+- ✅ Referral rewards: Invited users get 400 coins, inviters get 200 coins + 1.4x multiplier
+- ✅ Referral link sharing on Team page with pingcaset.in domain
+- ✅ Protected routes requiring authentication before accessing app features
+- ✅ Secure token verification with email/ID validation on all auth endpoints
+- ✅ Database schema synced successfully with `npm run db:push`
+
+**Setup Required**
+- Firebase project credentials needed in Replit Secrets:
+  - Frontend: VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, etc.
+  - Backend: FIREBASE_ADMIN_CREDENTIALS (service account JSON)
 
 ## Recent Changes (November 5, 2025)
 
